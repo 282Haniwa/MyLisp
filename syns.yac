@@ -1,0 +1,44 @@
+%{
+#include "defs.h"
+#define YYSTYPE Cell *
+%}
+%token	INTEGER REAL LPAR RPAR DOT ATOMIC_SYMBOL;
+%%
+Program
+	: SExpression
+	{ $$ = $1; eval($$); }
+	| Program SExpression
+	{ $$ = $2; eval($$); }
+SExpression
+	: Atom
+	{ $$ = $1; }
+	| DottedPair
+	{ $$ = $1; }
+	| List
+	{ $$ = $1; }
+List
+	: LPAR RPAR
+	{ $$ = leaf("ATOM", "nil"); }
+	| LPAR ListPart RPAR
+	{ $$ = $2; }
+ListPart
+	: SExpression
+	{ $$ = cons($1, leaf("ATOM", "nil")); }
+	| ListPart SExpression
+	{ $$ = list($1, cons($2, leaf("ATOM", "nil"))); }
+DottedPair
+	: LPAR SExpression DOT SExpression RPAR
+	{ $$ = cons($2, $4); }
+Atom
+	: ATOMIC_SYMBOL
+	{ $$ = leaf("ATOM", yytext); }
+	| INTEGER
+	{ $$ = leaf("INTEGER", yytext); }
+	| REAL
+	{ $$ = leaf("REAL", yytext); }
+%%
+#include "lex.yy.c"
+void yyerror(char *s) {
+	fprintf(stderr, "\n%s at %d: nearby \"%s\"\n\n", s, linecounter, yytext);
+	exit(EXIT_FAILURE);
+}
