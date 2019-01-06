@@ -1,5 +1,6 @@
 #include "defs.h"
 #include "subr.h"
+#include "fsubr.h"
 
 int main(void) {
 	linecounter = 1;
@@ -86,4 +87,8 @@ void visit(Cell *pointer, int level) {
 void eval(Cell *pointer) {
 	tree(pointer);
 	return;
+}
+
+void initial_atom_binding() {
+	
 }
