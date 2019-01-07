@@ -38,7 +38,7 @@ $(YACC): $(SYNS) $(LEXC) $(DEFS)
 	$(CC) $(CCFLAGS) -c $< -o $@
 
 clean:
-	-rm -f $(TARGET)* $(OBJS) $(LEXC) $(YACC) $(TMP) *\~
+	-rm -f $(TARGET) $(OBJS) $(LEXC) $(YACC) $(TMP) *\~
 
 src: all
 	./$(TARGET) < $(SRC) > $(TMP)
