@@ -13,7 +13,7 @@ int linecounter = 1;
 "\r"				{ linecounter++; }
 " "|"\t"			{ }
 "#".*				{ linecounter++; }
-.*					{ return(ATOMIC_SYMBOL); }
+[^ \t\r\n().#]*		{ return(ATOMIC_SYMBOL); }
 %%
 int yywrap(void) {
 	return(1);

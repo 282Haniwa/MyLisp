@@ -5,14 +5,14 @@ LD	= cc
 LDFLAGS	= -W
 
 # COMPILE (*.c)
-CC	= cc
-CCFLAGS	= -W -O2
+CC	= gcc
+CCFLAGS	= -W -O2 -g
 
 # GENERATOR (*.lex and *.yac)
 LEX	= flex
 YAC	= yacc
 
-OBJS	= y.tab.o main.o
+OBJS	= y.tab.o main.o base.o
 DEFS	= defs.h
 REXP	= rexp.lex
 LEXC	= lex.yy.c

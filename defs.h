@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "structure.h"
+#include "base.h"
 
 #define TRUE	1
 #define FALSE	0
@@ -14,10 +14,6 @@ int main(void);
 int yylex(void);
 int yyparse(void);
 void yyerror(char*);
-Cell *cons(Cell *, Cell *);
-// Cell *node(char *, Cell *);
-Cell *leaf(char *, char *);
-Cell *list(Cell *, Cell *);
 void tree(Cell *);
 void visit(Cell *, int);
-void eval(Cell *);
+void evaluate(Cell *pointer);

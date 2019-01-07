@@ -48,7 +48,7 @@ Cell *(*subr_funcp_array[])(Cell *) = {
 	fsubr_quote
 };
 
-char *subr_binded_atom_array[] = {
+char *subr_binding_atom_array[] = {
 	"+",
 	"-",
 	"*",

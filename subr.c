@@ -47,7 +47,7 @@ Cell *(*subr_funcp_array[])(Cell *) = {
 	subr_numberp
 };
 
-char *subr_binded_atom_array[] = {
+char *subr_binding_atom_array[] = {
 	"atom",
 	"car",
 	"cdr",

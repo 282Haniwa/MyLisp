@@ -6,9 +6,9 @@
 %%
 Program
 	: SExpression
-	{ $$ = $1; eval($$); }
+	{ $$ = $1; evaluate($$); }
 	| Program SExpression
-	{ $$ = $2; eval($$); }
+	{ $$ = $2; evaluate($$); }
 SExpression
 	: Atom
 	{ $$ = $1; }
@@ -18,24 +18,24 @@ SExpression
 	{ $$ = $1; }
 List
 	: LPAR RPAR
-	{ $$ = leaf("ATOM", "nil"); }
+	{ $$ = atom("nil", object(OBJ_ATOM, NULL)); }
 	| LPAR ListPart RPAR
 	{ $$ = $2; }
 ListPart
 	: SExpression
-	{ $$ = cons($1, leaf("ATOM", "nil")); }
+	{ $$ = cons($1, atom("nil", object(OBJ_ATOM, NULL))); }
 	| ListPart SExpression
-	{ $$ = list($1, cons($2, leaf("ATOM", "nil"))); }
+	{ $$ = list($1, cons($2, atom("nil", object(OBJ_ATOM, NULL)))); }
 DottedPair
 	: LPAR SExpression DOT SExpression RPAR
 	{ $$ = cons($2, $4); }
 Atom
 	: ATOMIC_SYMBOL
-	{ $$ = leaf("ATOM", yytext); }
+	{ $$ = atom(yytext, object(OBJ_ATOM, NULL)); }
 	| INTEGER
-	{ $$ = leaf("INTEGER", yytext); }
+	{ $$ = atom(yytext, object(OBJ_INTEGER, yytext)); }
 	| REAL
-	{ $$ = leaf("REAL", yytext); }
+	{ $$ = atom(yytext, object(OBJ_REAL, yytext)); }
 %%
 #include "lex.yy.c"
 void yyerror(char *s) {
