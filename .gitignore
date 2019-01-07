@@ -5,3 +5,4 @@ MyLisp*
 lex.yy.c
 y.tab.c
 tmp.txt
+*.zip
