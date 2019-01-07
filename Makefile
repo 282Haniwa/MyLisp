@@ -13,6 +13,9 @@ CC_RELEASE_FLAGS	= -W -O2
 LEX	= flex
 YAC	= yacc
 
+# DEBUGGER
+DEBUGGER	= lldb
+
 OBJS	= y.tab.o main.o base.o
 DEFS	= defs.h
 REXP	= rexp.lex
@@ -21,10 +24,11 @@ SYNS	= syns.yac
 YACC	= y.tab.c
 SRC	= src.txt
 TMP	= tmp.txt
+ZIP_FILE	= $(TARGET).zip
 
 debug: CCFLAGS+=$(CC_DEBUG_FLAGS)
 debug: clean all
-	lldb $(TARGET)
+	$(DEBUGGER) $(TARGET)
 
 all: CCFLAGS+=$(CC_RELEASE_FLAGS)
 all: $(TARGET)
@@ -44,8 +48,11 @@ $(YACC): $(SYNS) $(LEXC) $(DEFS)
 	$(CC) $(CCFLAGS) -c $< -o $@
 
 clean:
-	-rm -f $(TARGET) $(OBJS) $(LEXC) $(YACC) $(TMP) *\~
+	-rm -f $(TARGET) $(OBJS) $(LEXC) $(YACC) $(TMP) $(ZIP_FILE) *\~
 
 src: all
 	./$(TARGET) < $(SRC) > $(TMP)
 	cat $(TMP)
+
+zip: clean
+	zip  $(ZIP_FILE) *.h *.c $(REXP) $(SYNS)
