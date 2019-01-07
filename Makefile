@@ -5,8 +5,9 @@ LD	= cc
 LDFLAGS	= -W
 
 # COMPILE (*.c)
-CC	= gcc
-CCFLAGS	= -W -O2 -g
+CC	= cc
+CC_DEBUG_FLAGS	= -W -O0 -g
+CC_RELEASE_FLAGS	= -W -O2
 
 # GENERATOR (*.lex and *.yac)
 LEX	= flex
@@ -21,6 +22,11 @@ YACC	= y.tab.c
 SRC	= src.txt
 TMP	= tmp.txt
 
+debug: CCFLAGS+=$(CC_DEBUG_FLAGS)
+debug: clean all
+	lldb $(TARGET)
+
+all: CCFLAGS+=$(CC_RELEASE_FLAGS)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
