@@ -16,6 +16,10 @@ YAC	= yacc
 # DEBUGGER
 DEBUGGER	= lldb
 
+# FORMATTER
+FORMATTER	= clang-format
+FORMAT_FLAGS	= -i -style=file
+
 OBJS	= y.tab.o main.o base.o
 DEFS	= defs.h
 REXP	= rexp.lex
@@ -53,6 +57,9 @@ clean:
 src: all
 	./$(TARGET) < $(SRC) > $(TMP)
 	cat $(TMP)
+
+format: clean
+	$(FORMATTER) $(FORMAT_FLAGS) *.c
 
 zip: clean
 	zip  $(ZIP_FILE) *.h *.c $(REXP) $(SYNS)
