@@ -62,4 +62,4 @@ format: clean
 	$(FORMATTER) $(FORMAT_FLAGS) *.c
 
 zip: clean
-	zip  $(ZIP_FILE) *.h *.c $(REXP) $(SYNS)
+	zip -r $(ZIP_FILE) ./
