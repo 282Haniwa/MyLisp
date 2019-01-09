@@ -45,5 +45,7 @@ void visit(Cell *pointer, int level) {
 
 void evaluate(Cell *pointer) {
 	tree(pointer);
+	// Cell *result = subr_eval(pointer);
+	// subr_print(result);
 	return;
 }

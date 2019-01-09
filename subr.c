@@ -37,6 +37,10 @@ Cell *subr_numberp(Cell *pointer) {
 	return;
 }
 
+Cell *subr_print(Cell *pointer) {
+	return;
+}
+
 Cell *(*subr_funcp_array[])(Cell *) = {
 	subr_atom,
 	subr_car,
@@ -44,7 +48,8 @@ Cell *(*subr_funcp_array[])(Cell *) = {
 	subr_cons,
 	subr_eq,
 	subr_eval,
-	subr_numberp
+	subr_numberp,
+	subr_print
 };
 
 char *subr_binding_atom_array[] = {
@@ -54,5 +59,6 @@ char *subr_binding_atom_array[] = {
 	"cons",
 	"eq",
 	"eval",
-	"numberp"
+	"numberp",
+	"print"
 }

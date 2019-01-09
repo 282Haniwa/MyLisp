@@ -10,13 +10,13 @@ Cell *cons(Cell *car, Cell *cdr) {
 	return(pointer);
 }
 
-Cell *atom(char *atomic_symbol, Cell *object_pointer) {
+Cell *atom(char *atomic_symbol, Cell *object_cell_pointer) {
 	Cell *pointer;
 
 	pointer = (Cell *)malloc(sizeof(Cell));
 	pointer->kind = ATOM;
 	pointer->head = (Cell *)strdup(atomic_symbol);
-	pointer->tail = (Cell *)object_pointer;
+	pointer->tail = (Cell *)object_cell_pointer;
 	return(pointer);
 }
 
