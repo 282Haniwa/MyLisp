@@ -14,6 +14,4 @@ int main(void);
 int yylex(void);
 int yyparse(void);
 void yyerror(char*);
-void tree(Cell *);
-void visit(Cell *, int);
 void evaluate(Cell *pointer);

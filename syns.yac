@@ -18,24 +18,24 @@ SExpression
 	{ $$ = $1; }
 List
 	: LPAR RPAR
-	{ $$ = atom("nil", object(OBJ_ATOM, NULL)); }
+	{ $$ = nil(); }
 	| LPAR ListPart RPAR
 	{ $$ = $2; }
 ListPart
 	: SExpression
-	{ $$ = cons($1, atom("nil", object(OBJ_ATOM, NULL))); }
+	{ $$ = cons($1, nil()); }
 	| ListPart SExpression
-	{ $$ = list($1, cons($2, atom("nil", object(OBJ_ATOM, NULL)))); }
+	{ $$ = list($1, cons($2, nil())); }
 DottedPair
 	: LPAR SExpression DOT SExpression RPAR
 	{ $$ = cons($2, $4); }
 Atom
 	: ATOMIC_SYMBOL
-	{ $$ = atom(yytext, object(OBJ_ATOM, NULL)); }
+	{ $$ = atom(yytext, NULL); }
 	| INTEGER
-	{ $$ = atom(yytext, object(OBJ_INTEGER, yytext)); }
+	{ $$ = atom(yytext, object(OBJ_NUMBER, yytext)); }
 	| REAL
-	{ $$ = atom(yytext, object(OBJ_REAL, yytext)); }
+	{ $$ = atom(yytext, object(OBJ_NUMBER, yytext)); }
 %%
 #include "lex.yy.c"
 void yyerror(char *s) {

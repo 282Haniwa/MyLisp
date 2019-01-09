@@ -4,9 +4,12 @@
 
 #ifndef BASE_H
 #define BASE_H
+#define CELL_LIST_SIZE 4096
+#define ATOM_LIST_SIZE 2048
+#define OBJECT_LIST_SIZE 2048
 
-enum {CONS, ATOM, OBJECT};
-enum {OBJ_INTEGER, OBJ_REAL, OBJ_STRING, OBJ_ATOM, OBJ_LIST};
+enum {CONS, ATOM};
+enum {OBJ_NUMBER, OBJ_STRING, OBJ_ATOM, OBJ_CONS, OBJ_NIL, OBJ_T};
 
 typedef struct cell {
 	int          kind;
@@ -20,10 +23,31 @@ typedef struct obj {
 	void        *value;
 } Object;
 
+void init(void);
 Cell *cons(Cell *, Cell *);
-Cell *atom(char *, Cell *);
-Cell *object(int, void *);
 Cell *list(Cell *, Cell *);
-void initial_atom_binding(void);
+Cell *atom(char *, Cell *);
+Cell *nil(void);
+Cell *t(void);
+Cell *object(int, void *);
+double number(Object *);
+Object *find_object(void *);
+Cell *find_bound_atom(char *);
+void dump_cell_list(void);
+void dump_bound_atom_list(void);
+void dump_object_list(void);
+void dump_tree(Cell *);
+void visit(Cell *, int);
+
+// gc実装用に確保
+// TODO: gcを実装
+extern Cell **cell_list;
+extern Object **object_list;
+// bound_atom識別用に確保
+extern Cell **bound_atom_list;
+
+extern int cell_list_next_index;
+extern int object_list_next_index;
+extern int bound_atom_list_next_index;
 
 #endif // BASE_H
