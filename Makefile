@@ -30,12 +30,12 @@ SRC	= src.txt
 TMP	= tmp.txt
 ZIP_FILE	= $(TARGET).zip
 
+all: CCFLAGS+=$(CC_RELEASE_FLAGS)
+all: $(TARGET)
+
 debug: CCFLAGS+=$(CC_DEBUG_FLAGS)
 debug: clean all
 	$(DEBUGGER) $(TARGET)
-
-all: CCFLAGS+=$(CC_RELEASE_FLAGS)
-all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJS)
