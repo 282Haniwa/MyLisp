@@ -11,6 +11,7 @@ Cell *fsubr_div(Cell *);
 Cell *fsubr_mod(Cell *);
 Cell *fsubr_cond(Cell *);
 Cell *fsubr_define(Cell *);
+Cell *fsubr_defun(Cell *);
 Cell *fsubr_lambda(Cell *);
 Cell *fsubr_quote(Cell *);
 

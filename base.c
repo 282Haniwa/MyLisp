@@ -2,21 +2,21 @@
 
 Cell **cell_list;
 Object **object_list;
-Cell **bound_atom_list;
+Cell **global_bound_atom_list;
 int cell_list_next_index = 0;
 int object_list_next_index = 0;
-int bound_atom_list_next_index = 0;
+int global_bound_atom_list_next_index = 0;
 
 void init(void) {
     cell_list = (Cell **)malloc(CELL_LIST_SIZE * sizeof(Cell *));
     object_list = (Object **)malloc(OBJECT_LIST_SIZE * sizeof(Object *));
-    bound_atom_list = (Cell **)malloc(ATOM_LIST_SIZE * sizeof(Cell *));
+    global_bound_atom_list = (Cell **)malloc(ATOM_LIST_SIZE * sizeof(Cell *));
     cell_list_next_index = 0;
     object_list_next_index = 0;
-    bound_atom_list_next_index = 0;
+    global_bound_atom_list_next_index = 0;
 
-    bound_atom_list[bound_atom_list_next_index++] = nil();
-    bound_atom_list[bound_atom_list_next_index++] = t();
+    global_bound_atom_list[global_bound_atom_list_next_index++] = nil();
+    global_bound_atom_list[global_bound_atom_list_next_index++] = t();
 }
 
 Cell *cons(Cell *car, Cell *cdr) {
@@ -142,12 +142,12 @@ double number(Object *object_pointer) {
 }
 
 Object *find_object(void *object_value) {
-    int n = 0;
+    int index = 0;
     Object *pointer;
 
     // 線形探索は効率が悪い
-    while (n < object_list_next_index) {
-        pointer = object_list[n++];
+    while (index < object_list_next_index) {
+        pointer = object_list[index++];
         if (pointer->kind == OBJ_ATOM || pointer->kind == OBJ_CONS) {
             if (object_value == pointer->value) {
                 return (pointer);
@@ -162,13 +162,26 @@ Object *find_object(void *object_value) {
     return (NULL);
 }
 
-Cell *find_bound_atom(char *atomic_symbol) {
-    int n = 0;
+Cell *find_bound_atom(char *atomic_symbol, Cell ** environment, int environment_last_index) {
+    int index;
     Cell *pointer;
 
     // 線形探索は効率が悪い
-    while (n < bound_atom_list_next_index) {
-        pointer = bound_atom_list[n++];
+    // 先に関数ローカルの環境から調べる
+    
+    if (environment != NULL) {
+        index = 0;
+        while (index < environment_last_index) {
+            pointer = environment[index++];
+            if (!strcmp((const char *)atomic_symbol, (const char *)pointer->head)) {
+                return (pointer);
+            }
+        }
+    }
+    // 関数ローカルで見つからなかった場合はグローバルから探す
+    index = 0;
+    while (index < global_bound_atom_list_next_index) {
+        pointer = global_bound_atom_list[index++];
         if (!strcmp((const char *)atomic_symbol, (const char *)pointer->head)) {
             return (pointer);
         }
@@ -179,18 +192,25 @@ Cell *find_bound_atom(char *atomic_symbol) {
 void dump_cell_list(void) {
     printf("cell count is : %d\n", cell_list_next_index);
     printf("cell list is  :\n");
-    for (int i = 0; i < cell_list_next_index; i++) {
-        dump_tree(cell_list[i]);
+    for (int index = 0; index < cell_list_next_index; index++) {
+        dump_tree(cell_list[index]);
         printf("\n");
     }
     printf("--------------------------------\n");
 }
 
-void dump_bound_atom_list(void) {
-    printf("bound atom count is : %d\n", bound_atom_list_next_index);
+void dump_bound_atom_list(Cell ** environment, int environment_last_index) {
+    printf("global bound atom count is : %d\n", global_bound_atom_list_next_index);
     printf("bound atom list is  :\n");
-    for (int i = 0; i < bound_atom_list_next_index; i++) {
-        printf("%s\n", (const char *)bound_atom_list[i]->head);
+    for (int index = 0; index < global_bound_atom_list_next_index; index++) {
+        printf("%s\n", (const char *)global_bound_atom_list[index]->head);
+    }
+    if (environment != NULL) {
+        printf("lambda local bound atom count is : %d\n", environment_last_index);
+        printf("bound atom list is  :\n");
+        for (int index = 0; index < environment_last_index; index++) {
+            printf("%s\n", (const char *)environment[index]->head);
+        }
     }
     printf("--------------------------------\n");
 }
@@ -198,8 +218,8 @@ void dump_bound_atom_list(void) {
 void dump_object_list(void) {
     printf("object count is : %d\n", object_list_next_index);
     printf("object list is  :\n");
-    for (int i = 0; i < object_list_next_index; i++) {
-        Object *object_pointer = object_list[i];
+    for (int index = 0; index < object_list_next_index; index++) {
+        Object *object_pointer = object_list[index];
         if (object_pointer->kind == OBJ_ATOM) {
             printf("atom(%s)\n", (const char *)((Cell *)object_pointer)->head);
         } else if (object_pointer->kind == OBJ_CONS) {

@@ -14,6 +14,8 @@ Cell *fsubr_cond(Cell *pointer) { return; }
 
 Cell *fsubr_define(Cell *pointer) { return; }
 
+Cell *fsubr_defun(Cell *pointer) { return; }
+
 Cell *fsubr_lambda(Cell *pointer) { return; }
 
 Cell *fsubr_quote(Cell *pointer) { return; }

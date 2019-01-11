@@ -32,9 +32,9 @@ Cell *t(void);
 Cell *object(int, void *);
 double number(Object *);
 Object *find_object(void *);
-Cell *find_bound_atom(char *);
+Cell *find_bound_atom(char *, Cell **, int);
 void dump_cell_list(void);
-void dump_bound_atom_list(void);
+void dump_bound_atom_list(Cell **, int);
 void dump_object_list(void);
 void dump_tree(Cell *);
 void visit(Cell *, int);
@@ -44,10 +44,10 @@ void visit(Cell *, int);
 extern Cell **cell_list;
 extern Object **object_list;
 // bound_atom識別用に確保
-extern Cell **bound_atom_list;
+extern Cell **global_bound_atom_list;
 
 extern int cell_list_next_index;
 extern int object_list_next_index;
-extern int bound_atom_list_next_index;
+extern int global_bound_atom_list_next_index;
 
 #endif // BASE_H
