@@ -45,7 +45,7 @@ Cell *atom(char *atomic_symbol, Cell *object_pointer) {
     Cell *pointer;
 
     if (object_pointer == NULL) {
-        pointer = find_bound_atom(atomic_symbol);
+        pointer = find_bound_atom(atomic_symbol, NULL, 0);
         if (pointer != NULL) {
             return (pointer);
         }
@@ -63,7 +63,7 @@ Cell *nil(void) {
     Object *object_pointer;
     Cell *cell_pointer = NULL;
 
-    cell_pointer = find_bound_atom("nil");
+    cell_pointer = find_bound_atom("nil", NULL, 0);
     if (cell_pointer != NULL) {
         return (cell_pointer);
     }
@@ -84,7 +84,7 @@ Cell *t(void) {
     Object *object_pointer;
     Cell *cell_pointer = NULL;
 
-    cell_pointer = find_bound_atom("t");
+    cell_pointer = find_bound_atom("t", NULL, 0);
     if (cell_pointer != NULL) {
         return (cell_pointer);
     }
