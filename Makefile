@@ -20,7 +20,7 @@ DEBUGGER	= lldb
 FORMATTER	= clang-format
 FORMAT_FLAGS	= -i -style=file
 
-OBJS	= y.tab.o main.o base.o
+OBJS	= y.tab.o main.o base.o lib/list.o
 DEFS	= defs.h
 REXP	= rexp.lex
 LEXC	= lex.yy.c
