@@ -1,8 +1,6 @@
 #include "subr.h"
 #include <stdio.h>
 
-#define STACK_SIZE 2048
-
 Cell *subr_atom(Cell *pointer) { return; }
 
 Cell *subr_car(Cell *pointer) { return; }
@@ -14,13 +12,7 @@ Cell *subr_cons(Cell *pointer) { return; }
 Cell *subr_eq(Cell *pointer) { return; }
 
 Cell *subr_eval(Cell *pointer) {
-    Cell *stack[STACK_SIZE];
-    tree(pointer);
-
-    if (strcmp((const char *)pointer->head, "ATOM")) {
-        /* code */
-    }
-    return;
+    
 }
 
 Cell *subr_numberp(Cell *pointer) { return; }

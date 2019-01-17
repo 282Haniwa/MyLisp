@@ -3,9 +3,12 @@
 #include <string.h>
 #include "base.h"
 
-#define TRUE	1
-#define FALSE	0
-#define ATOM_TABLE_SIZE	2048
+#ifndef TRUE
+#define TRUE 0
+#endif //TRUE
+#ifndef FALSE
+#define FALSE 1
+#endif //TRUE
 
 extern char *yytext;
 extern int linecounter;
