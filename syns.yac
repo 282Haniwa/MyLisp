@@ -33,9 +33,9 @@ Atom
 	: ATOMIC_SYMBOL
 	{ $$ = atom(yytext, NULL); }
 	| INTEGER
-	{ $$ = atom(yytext, object(OBJ_NUMBER, yytext)); }
+	{ $$ = atom(yytext, number(yytext)); }
 	| REAL
-	{ $$ = atom(yytext, object(OBJ_NUMBER, yytext)); }
+	{ $$ = atom(yytext, number(yytext)); }
 %%
 #include "lex.yy.c"
 void yyerror(char *s) {

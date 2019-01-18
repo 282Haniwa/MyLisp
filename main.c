@@ -14,7 +14,6 @@ int main(void) {
 void evaluate(Cell *pointer) {
     dump_tree(pointer);
     dump_bound_atom_list(NULL);
-    dump_object_list();
     // dump_cell_list();
     // Cell *result = subr_eval(pointer);
     // subr_print(result);
