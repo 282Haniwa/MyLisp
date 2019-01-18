@@ -18,7 +18,13 @@ typedef struct list {
 
 List *new_list(void *);
 int list_append(List *, void *);
-void *list_pop(List *, void *);
+/*
+ * 1オリジンでアクセスできる。
+ * マイナスのインデックスを指定することで後ろから数えてn番目の要素にアクセスできる。
+*/
+void *list_get(List *, int);
+int list_index_of(List *, void *);
+void *list_pop(List *, int);
 int list_length(List *);
 int free_list(List *);
 

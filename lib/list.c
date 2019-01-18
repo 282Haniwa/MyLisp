@@ -23,31 +23,94 @@ int list_append(List *list, void *new_element) {
     return (TRUE);
 }
 
-void *list_pop(List *list, void *target) {
+void *list_get(List *list, int index) {
+    int counter, length, target_index;
     List *pointer;
-    void *result;
+    void *target = NULL;
 
     if (list == NULL) {
         return (NULL);
     }
+    length = list_length(list);
+    if (index > length || index < -length) {
+        return (NULL);
+    }
+
+    if (index < 0) {
+        target_index = length + index + 1;
+    }
+
+    counter = 0;
     pointer = list;
     while (pointer->next != NULL) {
-        if (pointer->data == target) {
-            List *tmp = pointer->next;
-            result = pointer->data;
-            free(pointer);
-            pointer = tmp;
-            return (result);
+        counter++;
+        if (target_index == counter) {
+            target = pointer->data;
         }
         pointer = pointer->next;
     }
-    if (target == NULL) {
-        result = pointer->data;
-        free(pointer);
-        pointer = NULL;
-        return (result);
+    return (target);
+}
+
+int list_index_of(List *list, void *target) {
+    int counter, target_index;
+    List *pointer;
+
+    if (list == NULL || target == NULL) {
+        return (NULL);
+    }
+
+    pointer = list;
+    while (pointer->next != NULL) {
+        counter++;
+        if (pointer->data == target) {
+            return (counter);
+        }
+        pointer = pointer->next;
     }
     return (NULL);
+}
+
+void *list_pop(List *list, int index) {
+    int counter, length, target_index;
+    List *pointer;
+    void *target = NULL;
+
+    if (list == NULL) {
+        return (NULL);
+    }
+    length = list_length(list);
+    if (index > length || index < -length) {
+        return (NULL);
+    }
+
+    if (index < 0) {
+        target_index = length + index + 1;
+    }
+
+    counter = 0;
+    pointer = list;
+    if (index == NULL) {
+        while (pointer->next != NULL) {
+            counter++;
+            pointer = pointer->next;
+        }
+        target = pointer->data;
+        free(pointer);
+        pointer->next = NULL;
+    } else {
+        while (pointer->next != NULL) {
+            counter++;
+            if (counter == target_index - 1) {
+                List *tmp = pointer->next->next;
+                target = pointer->next->data;
+                free(pointer->next);
+                pointer->next = tmp;
+            }
+            pointer = pointer->next;
+        }
+    }
+    return (target);
 }
 
 int list_length(List *list) {
