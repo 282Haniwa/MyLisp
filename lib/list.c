@@ -57,7 +57,7 @@ int list_index_of(List *list, void *target) {
     List *pointer;
 
     if (list == NULL || target == NULL) {
-        return (NULL);
+        return (0);
     }
 
     pointer = list;
@@ -68,7 +68,7 @@ int list_index_of(List *list, void *target) {
         }
         pointer = pointer->next;
     }
-    return (NULL);
+    return (0);
 }
 
 void *list_pop(List *list, int index) {
@@ -80,7 +80,7 @@ void *list_pop(List *list, int index) {
         return (NULL);
     }
     length = list_length(list);
-    if (index > length || index < -length) {
+    if (index == 0 || index > length || index < -length) {
         return (NULL);
     }
 
@@ -90,25 +90,15 @@ void *list_pop(List *list, int index) {
 
     counter = 0;
     pointer = list;
-    if (index == NULL) {
-        while (pointer->next != NULL) {
-            counter++;
-            pointer = pointer->next;
+    while (pointer->next != NULL) {
+        counter++;
+        if (counter == target_index - 1) {
+            List *tmp = pointer->next->next;
+            target = pointer->next->data;
+            free(pointer->next);
+            pointer->next = tmp;
         }
-        target = pointer->data;
-        free(pointer);
-        pointer->next = NULL;
-    } else {
-        while (pointer->next != NULL) {
-            counter++;
-            if (counter == target_index - 1) {
-                List *tmp = pointer->next->next;
-                target = pointer->next->data;
-                free(pointer->next);
-                pointer->next = tmp;
-            }
-            pointer = pointer->next;
-        }
+        pointer = pointer->next;
     }
     return (target);
 }
