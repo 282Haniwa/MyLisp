@@ -254,3 +254,32 @@ void visit(Cell *pointer, int level) {
     }
     return;
 }
+
+void print_lisp_code(Cell *pointer) {
+    int count;
+
+    if (pointer->kind == ATOM || pointer->kind == NIL || pointer->kind == T || pointer->kind == NUMBER) {
+        printf("%s", (char *)pointer->head);
+    }
+    if (pointer->kind == CONS || pointer->kind == LAMBDA) {
+        if (is_lisp_list(pointer)) {
+            Cell *tmp;
+            tmp = pointer;
+            printf("(");
+            while (tmp->tail != nil()) {
+                print_lisp_code(tmp->head);
+                printf(" ");
+                tmp = tmp->tail;
+            }
+            print_lisp_code(tmp->head);
+            printf(")");
+        } else {
+            printf("(");
+            print_lisp_code(pointer->head);
+            printf(" . ");
+            print_lisp_code(pointer->tail);
+            printf(")");
+        }
+    }
+    return;
+}

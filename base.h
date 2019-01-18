@@ -37,6 +37,7 @@ void dump_bound_atom_list(List *);
 void dump_object_list(void);
 void dump_tree(Cell *);
 void visit(Cell *, int);
+void print_lisp_code(Cell *);
 void evaluate(Cell *);
 
 // gc実装用
