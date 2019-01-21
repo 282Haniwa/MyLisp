@@ -29,11 +29,11 @@ int list_insert(List *list, void *new_element, int index) {
     void *target = NULL;
 
     if (list == NULL) {
-        return (NULL);
+        return (FALSE);
     }
     length = list_length(list);
     if (index == 0 || index > length || index < -length) {
-        return (NULL);
+        return (FALSE);
     }
 
     if (index < 0) {
