@@ -23,6 +23,40 @@ int list_append(List *list, void *new_element) {
     return (TRUE);
 }
 
+int list_insert(List *list, void *new_element, int index) {
+    int counter, length, target_index;
+    List *pointer;
+    void *target = NULL;
+
+    if (list == NULL) {
+        return (NULL);
+    }
+    length = list_length(list);
+    if (index == 0 || index > length || index < -length) {
+        return (NULL);
+    }
+
+    if (index < 0) {
+        target_index = length + index + 1;
+    } else {
+        target_index = index;
+    }
+
+    counter = 0;
+    pointer = list;
+    while (pointer != NULL) {
+        counter++;
+        if (counter == target_index) {
+            List *tmp = pointer->next;
+            pointer->data = new_element;
+            pointer->next = tmp;
+            return (TRUE);
+        }
+        pointer = pointer->next;
+    }
+    return (FALSE);
+}
+
 void *list_get(List *list, int index) {
     int counter, length, target_index;
     List *pointer;
@@ -38,6 +72,8 @@ void *list_get(List *list, int index) {
 
     if (index < 0) {
         target_index = length + index + 1;
+    } else {
+        target_index = index;
     }
 
     counter = 0;
@@ -86,6 +122,8 @@ void *list_pop(List *list, int index) {
 
     if (index < 0) {
         target_index = length + index + 1;
+    } else {
+        target_index = index;
     }
 
     counter = 0;

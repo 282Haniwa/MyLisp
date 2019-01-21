@@ -18,6 +18,7 @@ typedef struct list {
 
 List *new_list(void *);
 int list_append(List *, void *);
+int list_insert(List *, void *, int);
 /*
  * 1オリジンでアクセスできる。
  * マイナスのインデックスを指定することで後ろから数えてn番目の要素にアクセスできる。
