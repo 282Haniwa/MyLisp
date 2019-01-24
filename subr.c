@@ -65,6 +65,17 @@ Cell *evaluate_subr_if_needed(char *atomic_symbol, Cell *pointer) {
     return (result);
 }
 
+int is_lambda(Cell *pointer) {
+    
+    if (pointer->kind != CONS) {
+        return (FALSE);
+    }
+    if (!strcmp((char *)pointer->head->head, "lambda") || !strcmp((char *)pointer->head->head, "nlambda")) {
+        return (TRUE);
+    }
+    return (FALSE);
+}
+
 Cell *subr_atom(Cell *pointer) {
     Cell *arg1;
 
@@ -185,7 +196,7 @@ Cell *subr_eval(Cell *pointer) {
             printf("Error: Dotted pair can't evaluate.\n");
             return (nil());
         }
-        // １つ目がatomだった時、組込関数なら実行して、そうでないなら評価した結果を変数(lambda)に束縛する。
+        // １つ目がatomだった時組込関数なら実行して、そうでないならバインドされているものがlambdaかどうか確認して変数(lambda)に束縛する。
         if (arg1->head->kind == ATOM) {
             // 組込関数であるか確認して、組込関数であれば、関数を実行する。
             result = evaluate_subr_if_needed((char *)arg1->head->head, arg1->tail);
@@ -197,25 +208,31 @@ Cell *subr_eval(Cell *pointer) {
                 return (result);
             }
             lambda = subr_eval(cons(arg1->head, nil()));
+            if (is_lambda(lambda)) {
+                return (evaluate_lambda(lambda, arg1->tail));
+            } else {
+                printf("Error: ");
+                print_lisp_code(arg1->head);
+                printf(" is not lambda.\n");
+                return (nil());
+            }
         } else if(arg1->head->kind == CONS) {
-            if (!strcmp((char *)arg1->head->head->head, "lambda") || !strcmp((char *)arg1->head->head->head, "nlambda")) {
+            if (is_lambda(arg1->head)) {
                 lambda = arg1->head;
             }
             lambda = subr_eval(cons(arg1->head, nil()));
-        }
-        // 評価した結果がlambda, nlambdaなら関数を実行し、それ以外ならエラーを出力する。
-        if (!strcmp((char *)lambda->head->head, "lambda")) {
-            Cell *args;
-            lambda = lambda->head;
-            // lambdaを関数として展開して、関数に引数を渡し、評価する。
-            return (evaluate_lambda(lambda, arg1->tail));
-        } else if (!strcmp((char *)lambda->head->head, "nlambda")) {
-            lambda = lambda->head;
-            return (evaluate_lambda(lambda, arg1->tail));
+            if (is_lambda(lambda)) {
+                return (evaluate_lambda(lambda, arg1->tail));
+            } else {
+                printf("Error: ");
+                print_lisp_code(arg1->head);
+                printf(" is not lambda.\n");
+                return (nil());
+            }
         } else {
             printf("Error: ");
             print_lisp_code(arg1->head);
-            printf(" is not lambda.\n");
+            printf(" is not function.\n");
             return (nil());
         }
     }

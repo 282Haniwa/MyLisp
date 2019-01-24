@@ -8,6 +8,7 @@
 
 Cell *evaluate_lambda(Cell *, Cell *);
 Cell *evaluate_subr_if_needed(char *, Cell *);
+int is_lambda(Cell *);
 Cell *subr_atom(Cell *);
 Cell *subr_car(Cell *);
 Cell *subr_cdr(Cell *);
