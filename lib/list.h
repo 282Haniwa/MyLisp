@@ -2,10 +2,10 @@
 #include <stdlib.h>
 
 #ifndef TRUE
-#define TRUE 0
+#define TRUE 1
 #endif //TRUE
 #ifndef FALSE
-#define FALSE 1
+#define FALSE 0
 #endif //TRUE
 
 #ifndef LIST_H
@@ -27,6 +27,6 @@ void *list_get(List *, int);
 int list_index_of(List *, void *);
 void *list_pop(List *, int);
 int list_length(List *);
-int free_list(List *);
+int list_free(List *);
 
 #endif // LIST_H
