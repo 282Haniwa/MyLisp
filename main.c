@@ -12,11 +12,14 @@ int main(void) {
 }
 
 void evaluate(Cell *pointer) {
+    Cell *result;
+
     print_lisp_code(pointer);
     printf("\n");
     dump_bound_atom_list(NULL);
     // dump_cell_list();
-    // Cell *result = subr_eval(pointer);
-    // subr_print(result);
+    result = subr_eval(cons(pointer, nil()));
+    subr_print(cons(result, nil()));
+    printf("\n");
     return;
 }

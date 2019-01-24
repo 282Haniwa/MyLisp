@@ -4,10 +4,10 @@
 #include "base.h"
 
 #ifndef TRUE
-#define TRUE 0
+#define TRUE 1
 #endif //TRUE
 #ifndef FALSE
-#define FALSE 1
+#define FALSE 0
 #endif //TRUE
 
 extern char *yytext;

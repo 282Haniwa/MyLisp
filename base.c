@@ -2,6 +2,7 @@
 
 List *cell_list = NULL;
 List *global_bound_atom_list = NULL;
+List *environment_stack = NULL;
 
 static Cell *ATOM_NIL = NULL;
 static Cell *ATOM_T = NULL;
@@ -9,6 +10,7 @@ static Cell *ATOM_T = NULL;
 void init(void) {
     cell_list = new_list(NULL);
     global_bound_atom_list = new_list(NULL);
+    environment_stack = new_list(new_list(NULL));
 }
 
 Cell *atom(char *atomic_symbol, Cell *bound_pointer) {
@@ -78,7 +80,7 @@ Cell *number(char *text) {
     value = strtod((char *)text, endptr);
     if (endptr == NULL) {
         pointer = (Cell *)malloc(sizeof(Cell));
-        pointer->kind = ATOM;
+        pointer->kind = NUMBER;
         pointer->head = (Cell *)strdup(text);
         pointer->tail = (Cell *)&value;
         list_append(cell_list, pointer);
@@ -90,11 +92,7 @@ Cell *lisp_list_append(Cell *list, Cell *new_element) {
     Cell *pointer;
 
     if (list == NULL) {
-        pointer = (Cell *)malloc(sizeof(Cell *));
-        pointer->kind = CONS;
-        pointer->head = new_element;
-        pointer->tail = nil();
-        return (pointer);
+        return (cons(new_element, nil()));
     }
 
     pointer = list;
@@ -109,11 +107,11 @@ Cell *lisp_list_append(Cell *list, Cell *new_element) {
 }
 
 int lisp_list_length(Cell *list) {
-    int counter;
+    int counter = 0;
     Cell *pointer;
 
     pointer = list;
-    while (pointer->tail != nil()) {
+    while (pointer != nil()) {
         pointer = pointer->tail;
         counter++;
     }
@@ -123,8 +121,11 @@ int lisp_list_length(Cell *list) {
 int is_lisp_list(Cell *list) {
     Cell *pointer;
 
+    if (list == nil()) {
+        return (TRUE);
+    }
     pointer = list;
-    while (pointer->kind == ATOM) {
+    while (pointer->kind == CONS) {
         pointer = pointer->tail;
     }
     if (pointer == nil()) {
@@ -135,8 +136,7 @@ int is_lisp_list(Cell *list) {
 }
 
 Cell *find_bound_atom(char *atomic_symbol, List *environment) {
-    List *pointer;
-
+    List *pointer, *list;
 
     if (!strcmp(atomic_symbol, "nil")) {
         return (nil());
@@ -149,32 +149,33 @@ Cell *find_bound_atom(char *atomic_symbol, List *environment) {
         return (NULL);
     }
 
-    // 先に関数ローカルの環境から調べる
+    // スタックのトップから順に辿って、bindされているatomを探す。
     if (environment != NULL) {
         pointer = environment;
-        if (pointer == NULL) {
-            return (NULL);
-        }
         while (pointer->next != NULL) {
-            pointer = pointer->next;
-            if (!strcmp((char *)atomic_symbol,
-                        (char *)((Cell *)pointer->data)->head)) {
-                return ((Cell *)pointer->data);
+            list = pointer->data;
+            while (list->next != NULL) {
+                if (!strcmp((char *)atomic_symbol,
+                            (char *)((Cell *)pointer->data)->head)) {
+                    return ((Cell *)pointer->data);
+                }
+                list = list->next;
             }
+            pointer = pointer->next;
         }
     }
     // 関数ローカルで見つからなかった場合はグローバル領域から探す
-    pointer = global_bound_atom_list;
-    if (pointer == NULL) {
-        return (NULL);
-    }
-    while (pointer->next != NULL) {
-        pointer = pointer->next;
-        if (!strcmp((char *)atomic_symbol,
-                    (char *)((Cell *)pointer->data)->head)) {
-            return ((Cell *)pointer->data);
-        }
-    }
+    // pointer = global_bound_atom_list;
+    // if (pointer == NULL) {
+    //     return (NULL);
+    // }
+    // while (pointer->next != NULL) {
+    //     pointer = pointer->next;
+    //     if (!strcmp((char *)atomic_symbol,
+    //                 (char *)((Cell *)pointer->data)->head)) {
+    //         return ((Cell *)pointer->data);
+    //     }
+    // }
     return (NULL);
 }
 
@@ -249,9 +250,6 @@ void visit(Cell *pointer, int level) {
         visit(pointer->tail, level + 1);
         printf(")");
     }
-    if (pointer->kind == LAMBDA) {
-        visit(pointer->tail, level + 1);
-    }
     return;
 }
 
@@ -261,7 +259,7 @@ void print_lisp_code(Cell *pointer) {
     if (pointer->kind == ATOM || pointer->kind == NIL || pointer->kind == T || pointer->kind == NUMBER) {
         printf("%s", (char *)pointer->head);
     }
-    if (pointer->kind == CONS || pointer->kind == LAMBDA) {
+    if (pointer->kind == CONS) {
         if (is_lisp_list(pointer)) {
             Cell *tmp;
             tmp = pointer;
