@@ -174,11 +174,16 @@ void *list_pop(List *list, int index) {
     pointer = list;
     while (pointer->next != NULL) {
         counter++;
-        if (counter == target_index - 1) {
-            List *tmp = pointer->next->next;
-            target = pointer->next->data;
+        if (counter == target_index) {
+            void *data;
+            List *next;
+
+            target = pointer->data;
+            next = pointer->next->next;
+            data = pointer->next->data;
             free(pointer->next);
-            pointer->next = tmp;
+            pointer->next = next;
+            pointer->data = data;
             return (target);
         }
         pointer = pointer->next;
