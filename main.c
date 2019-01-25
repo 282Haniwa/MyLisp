@@ -16,6 +16,9 @@ void evaluate(Cell *pointer) {
     Cell *result;
 
     error_flag = FALSE;
+    printf(">>> ");
+    print_lisp_code(pointer);
+    printf("\n");
     result = subr_eval(cons(pointer, nil()));
     printf("<<< ");
     if (error_flag) {
