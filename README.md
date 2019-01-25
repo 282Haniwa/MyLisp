@@ -269,7 +269,7 @@ lambdaをatomにバインドして関数として呼び出すこともできる
 ```
 
 ## BNF
-(Railroad Diagram Generator)[http://www.bottlecaps.de/rr/ui]をお借りしてBNFから図形を生成
+[Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui) をお借りしてBNFから図形を生成
 
 ```
 Program ::= SExpression+
