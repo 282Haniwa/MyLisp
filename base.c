@@ -155,15 +155,17 @@ Cell *find_bound_atom(char *atomic_symbol) {
     }
 
     // スタックのトップから順に辿って、bindされているatomを探す。
-    if (environment_stack != NULL) {
+    if (!list_is_empty(environment_stack)) {
         environment = environment_stack;
         while (environment != NULL) {
             atom_list = (List *)environment->data;
-            while (atom_list != NULL) {
-                if (!strcmp((char *)atomic_symbol, (char *)((Cell *)atom_list->data)->head)) {
-                    return ((Cell *)atom_list->data);
+            if (!list_is_empty(atom_list)) {
+                while (atom_list != NULL) {
+                    if (!strcmp((char *)atomic_symbol, (char *)((Cell *)atom_list->data)->head)) {
+                        return ((Cell *)atom_list->data);
+                    }
+                    atom_list = atom_list->next;
                 }
-                atom_list = atom_list->next;
             }
             environment = environment->next;
         }
@@ -193,17 +195,29 @@ void dump_bound_atom_list() {
     int bound_atom_count = 0;
 
     environment = environment_stack;
-    while (environment != NULL) {
-        bound_atom_count += list_length(environment->data);
-        environment = environment->next;
+    
+    if (!list_is_empty(environment)) {
+        while (environment != NULL) {
+            bound_atom_count += list_length(environment->data);
+            environment = environment->next;
+        }
     }
     printf("bound atom count is : %d\n", bound_atom_count);
     printf("bound atom list is  :\n");
     environment = environment_stack;
-    while (environment != NULL) {
-        atom_list = (List *)environment->data;
-        dump_tree((Cell *)atom_list->data);
-        environment = environment->next;
+    if (!list_is_empty(environment)) {
+        while (environment != NULL) {
+            atom_list = (List *)environment->data;
+            if (!list_is_empty(atom_list)) {
+                while (atom_list != NULL) {
+                    printf("%s <- ", (char *)((Cell *)atom_list->data)->head);
+                    print_lisp_code(((Cell *)atom_list->data)->tail);
+                    printf("\n");
+                    atom_list = atom_list->next;
+                }
+            }
+            environment = environment->next;
+        }
     }
     printf("--------------------------------\n");
 }

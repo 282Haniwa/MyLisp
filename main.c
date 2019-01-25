@@ -3,6 +3,7 @@
 #include "subr.h"
 
 int main(void) {
+    printf("MyLisp interpreter launched.\n");
     init();
     linecounter = 1;
     if (yyparse() == 0) {
@@ -14,12 +15,10 @@ int main(void) {
 void evaluate(Cell *pointer) {
     Cell *result;
 
-    print_lisp_code(pointer);
-    printf("\n");
-    dump_bound_atom_list();
-    // dump_cell_list();
     result = subr_eval(cons(pointer, nil()));
+    printf("< ");
     subr_print(cons(result, nil()));
     printf("\n");
+    dump_bound_atom_list();
     return;
 }
