@@ -15,14 +15,14 @@ int main(void) {
 void evaluate(Cell *pointer) {
     Cell *result;
 
+    error_flag = FALSE;
     result = subr_eval(cons(pointer, nil()));
-    printf("< ");
+    printf("<<< ");
     if (error_flag) {
         subr_print(cons(nil(), nil()));
     } else {
         subr_print(cons(result, nil()));
     }
     printf("\n");
-    dump_bound_atom_list();
     return;
 }
