@@ -140,7 +140,25 @@ Cell *fsubr_div(Cell *pointer) {
 // 実装を保留
 Cell *fsubr_mod(Cell *pointer) { return (pointer); }
 
-Cell *fsubr_cond(Cell *pointer) { return (pointer); }
+Cell *fsubr_cond(Cell *pointer) {
+    Cell *args, *condition, *function, *result;
+
+    args = pointer;
+    while (args != nil()) {
+        condition = args->head->head;
+        function = args->head->tail;
+        if (subr_eval(cons(condition, nil())) == t()) {
+            while (function != nil()) {
+                result = subr_eval(cons(function->head, nil()));
+                function = function->tail;
+            }
+            return (result);
+        }
+        args = args->tail;
+    }
+
+    return (nil());
+}
 
 Cell *fsubr_define(Cell *pointer) {
     Cell *atom_cell, *bound_item;
