@@ -26,26 +26,30 @@ Cell *evaluate_lambda(Cell *lambda, Cell *args) {
             printf("Error: Too many arguments.\n");
             error_flag = TRUE;
             return (nil());
-        } else if (lisp_list_length(arg_atom_list) > lisp_list_length(arg_list)) {
+        } else if (lisp_list_length(arg_atom_list) >
+                   lisp_list_length(arg_list)) {
             printf("Error: Too few arguments.\n");
             error_flag = TRUE;
             return (nil());
         }
         while (arg_atom_list != nil()) {
-            list_append(environment, atom((char *)arg_atom_list->head->head, subr_eval(cons(arg_list->head, nil()))));
+            list_append(environment,
+                        atom((char *)arg_atom_list->head->head,
+                             subr_eval(cons(arg_list->head, nil()))));
             arg_atom_list = arg_atom_list->tail;
             arg_list = arg_list->tail;
         }
         // 全ての引数を評価し終わってから、environmentをstackにpushする。
         list_insert(environment_stack, environment, 1);
-    } else if(!strcmp((char *)lambda->head->head, "nlambda")) {
+    } else if (!strcmp((char *)lambda->head->head, "nlambda")) {
         // nlambdaは引数の定義を１つにしなければならない。
         if (lisp_list_length(arg_atom_list) > 1) {
             printf("Error: Too many defined arguments for nlambda.\n");
             error_flag = TRUE;
             return (nil());
         }
-        list_append(environment, atom((char *)arg_atom_list->head->head, arg_list));
+        list_append(environment,
+                    atom((char *)arg_atom_list->head->head, arg_list));
         // 全ての引数を評価し終わってから、environmentをstackにpushする。
         list_insert(environment_stack, environment, 1);
     }
@@ -67,7 +71,8 @@ Cell *evaluate_subr_if_needed(char *atomic_symbol, Cell *pointer) {
             args = pointer;
             evaluated_args = nil();
             while (args != nil()) {
-                evaluated_args = lisp_list_append(evaluated_args, subr_eval(cons(args->head, nil())));
+                evaluated_args = lisp_list_append(
+                    evaluated_args, subr_eval(cons(args->head, nil())));
                 args = args->tail;
             }
             result = subr_funcp_array[index](evaluated_args);
@@ -77,11 +82,12 @@ Cell *evaluate_subr_if_needed(char *atomic_symbol, Cell *pointer) {
 }
 
 int is_lambda(Cell *pointer) {
-    
+
     if (pointer->kind != CONS) {
         return (FALSE);
     }
-    if (!strcmp((char *)pointer->head->head, "lambda") || !strcmp((char *)pointer->head->head, "nlambda")) {
+    if (!strcmp((char *)pointer->head->head, "lambda") ||
+        !strcmp((char *)pointer->head->head, "nlambda")) {
         return (TRUE);
     }
     return (FALSE);
@@ -100,7 +106,8 @@ Cell *subr_atom(Cell *pointer) {
         return (nil());
     }
     arg1 = pointer->head;
-    if (arg1->kind == ATOM || arg1->kind == T || arg1->kind == NIL || arg1->kind == NUMBER) {
+    if (arg1->kind == ATOM || arg1->kind == T || arg1->kind == NIL ||
+        arg1->kind == NUMBER) {
         return (t());
     }
     return (nil());
@@ -253,11 +260,13 @@ Cell *subr_eval(Cell *pointer) {
         // １つ目がatomだった時組込関数なら実行して、そうでないならバインドされているものがlambdaかどうか確認して変数(lambda)に束縛する。
         if (arg1->head->kind == ATOM) {
             // 組込関数であるか確認して、組込関数であれば、関数を実行する。
-            result = evaluate_subr_if_needed((char *)arg1->head->head, arg1->tail);
+            result =
+                evaluate_subr_if_needed((char *)arg1->head->head, arg1->tail);
             if (result != NULL) {
                 return (result);
             }
-            result = evaluate_fsubr_if_needed((char *)arg1->head->head, arg1->tail);
+            result =
+                evaluate_fsubr_if_needed((char *)arg1->head->head, arg1->tail);
             if (result != NULL) {
                 return (result);
             }
@@ -271,7 +280,7 @@ Cell *subr_eval(Cell *pointer) {
                 error_flag = TRUE;
                 return (nil());
             }
-        } else if(arg1->head->kind == CONS) {
+        } else if (arg1->head->kind == CONS) {
             if (is_lambda(arg1->head)) {
                 lambda = arg1->head;
                 return (evaluate_lambda(lambda, arg1->tail));

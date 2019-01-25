@@ -163,7 +163,8 @@ Cell *find_bound_atom(char *atomic_symbol) {
             atom_list = (List *)environment->data;
             if (!list_is_empty(atom_list)) {
                 while (atom_list != NULL) {
-                    if (!strcmp((char *)atomic_symbol, (char *)((Cell *)atom_list->data)->head)) {
+                    if (!strcmp((char *)atomic_symbol,
+                                (char *)((Cell *)atom_list->data)->head)) {
                         return ((Cell *)atom_list->data);
                     }
                     atom_list = atom_list->next;
@@ -197,7 +198,7 @@ void dump_bound_atom_list() {
     int bound_atom_count = 0;
 
     environment = environment_stack;
-    
+
     if (!list_is_empty(environment)) {
         while (environment != NULL) {
             bound_atom_count += list_length(environment->data);
@@ -236,7 +237,8 @@ void visit(Cell *pointer, int level) {
     for (count = 0; count < level; count++) {
         printf("    ");
     }
-    if (pointer->kind == ATOM || pointer->kind == NIL || pointer->kind == T || pointer->kind == NUMBER) {
+    if (pointer->kind == ATOM || pointer->kind == NIL || pointer->kind == T ||
+        pointer->kind == NUMBER) {
         printf("atom(");
         printf("%s", (char *)pointer->head);
         printf(" %s", (char *)pointer->tail);
@@ -254,7 +256,8 @@ void visit(Cell *pointer, int level) {
 void print_lisp_code(Cell *pointer) {
     int count;
 
-    if (pointer->kind == ATOM || pointer->kind == NIL || pointer->kind == T || pointer->kind == NUMBER) {
+    if (pointer->kind == ATOM || pointer->kind == NIL || pointer->kind == T ||
+        pointer->kind == NUMBER) {
         printf("%s", (char *)pointer->head);
     }
     if (pointer->kind == CONS) {

@@ -1,11 +1,11 @@
 #include "fsubr.h"
 
-Cell *(*fsubr_funcp_array[])(Cell *) = {fsubr_add,    fsubr_sub,    fsubr_mul,
-                                       fsubr_div,    fsubr_mod,    fsubr_cond,
-                                       fsubr_define, fsubr_defun, fsubr_quote};
+Cell *(*fsubr_funcp_array[])(Cell *) = {fsubr_add,    fsubr_sub,   fsubr_mul,
+                                        fsubr_div,    fsubr_mod,   fsubr_cond,
+                                        fsubr_define, fsubr_defun, fsubr_quote};
 
-char *fsubr_binding_atom_array[] = {"+",    "-",      "*",      "/",    "%",
-                                   "cond", "define", "defun", "quote"};
+char *fsubr_binding_atom_array[] = {"+",    "-",      "*",     "/",    "%",
+                                    "cond", "define", "defun", "quote"};
 
 Cell *evaluate_fsubr_if_needed(char *atomic_symbol, Cell *pointer) {
     Cell *result = NULL;
@@ -182,20 +182,20 @@ Cell *fsubr_define(Cell *pointer) {
         List *tmp;
         tmp = environment;
         while (tmp != NULL) {
-            if (!strcmp((char *)((Cell *)tmp->data)->head, (char *)atom_cell->head)) {
+            if (!strcmp((char *)((Cell *)tmp->data)->head,
+                        (char *)atom_cell->head)) {
                 ((Cell *)tmp->data)->tail = subr_eval(cons(bound_item, nil()));
                 return (tmp->data);
             }
             tmp = tmp->next;
         }
     }
-    atom_cell = atom((char *)atom_cell->head, subr_eval(cons(bound_item, nil())));
+    atom_cell =
+        atom((char *)atom_cell->head, subr_eval(cons(bound_item, nil())));
     list_append(environment, atom_cell);
     return (atom_cell);
 }
 
 Cell *fsubr_defun(Cell *pointer) { return (pointer); }
 
-Cell *fsubr_quote(Cell *pointer) {
-    return (pointer->head);
-}
+Cell *fsubr_quote(Cell *pointer) { return (pointer->head); }
