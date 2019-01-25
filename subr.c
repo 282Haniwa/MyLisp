@@ -15,11 +15,11 @@ Cell *evaluate_lambda(Cell *lambda, Cell *args) {
     environment = new_list(NULL);
     arg_atom_list = lambda->tail->head;
     arg_list = args;
-    function = lambda->tail->tail->head;
+    function = lambda->tail->tail;
     if (!is_lisp_list(arg_atom_list)) {
         printf("Error: Lambda args should define with list.\n");
     }
-    if (!strcmp((char *)lambda->head, "lambda")) {
+    if (!strcmp((char *)lambda->head->head, "lambda")) {
         // 引数の数が合わなければエラーを出力する。
         if (lisp_list_length(arg_atom_list) < lisp_list_length(arg_list)) {
             printf("Error: Too many arguments.\n");
@@ -28,29 +28,30 @@ Cell *evaluate_lambda(Cell *lambda, Cell *args) {
             printf("Error: Too few arguments.\n");
             return (nil());
         }
-        while (arg_atom_list->tail != nil()) {
-            list_append(environment, atom((char *)arg_atom_list->head, subr_eval(cons(arg_list->head->head, nil()))));
+        while (arg_atom_list != nil()) {
+            list_append(environment, atom((char *)arg_atom_list->head->head, subr_eval(cons(arg_list->head, nil()))));
             arg_atom_list = arg_atom_list->tail;
             arg_list = arg_list->tail;
         }
         // 全ての引数を評価し終わってから、environmentをstackにpushする。
         list_insert(environment_stack, environment, 1);
-    } else if(!strcmp((char *)lambda->head, "nlambda")) {
+    } else if(!strcmp((char *)lambda->head->head, "nlambda")) {
         // nlambdaは引数の定義を１つにしなければならない。
         if (lisp_list_length(arg_atom_list) > 1) {
             printf("Error: Too many defined arguments for nlambda.\n");
             return (nil());
         }
-        list_append(environment, atom((char *)arg_atom_list->head, arg_list));
+        list_append(environment, atom((char *)arg_atom_list->head->head, arg_list));
         // 全ての引数を評価し終わってから、environmentをstackにpushする。
         list_insert(environment_stack, environment, 1);
     }
-    while (function->tail != nil()) {
+    while (function != nil()) {
         result = subr_eval(cons(function->head, nil()));
         function = function->tail;
     }
     list_pop(environment_stack, 1);
     list_free(environment);
+    environment = NULL;
     return (result);
 }
 
@@ -219,6 +220,7 @@ Cell *subr_eval(Cell *pointer) {
         } else if(arg1->head->kind == CONS) {
             if (is_lambda(arg1->head)) {
                 lambda = arg1->head;
+                return (evaluate_lambda(lambda, arg1->tail));
             }
             lambda = subr_eval(cons(arg1->head, nil()));
             if (is_lambda(lambda)) {
