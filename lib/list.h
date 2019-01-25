@@ -16,6 +16,9 @@ typedef struct list {
 	struct list *next;
 } List;
 
+List *list_empty_data(void);
+List *list_empty(void);
+int list_is_empty(List *);
 List *new_list(void *);
 int list_append(List *, void *);
 int list_insert(List *, void *, int);

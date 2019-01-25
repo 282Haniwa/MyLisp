@@ -1,10 +1,40 @@
 #include "list.h"
 
+static List *EMPTY_LIST_DATA = NULL;
+
+List *list_empty_data(void) {
+    List *list;
+
+    if (EMPTY_LIST_DATA != NULL) {
+        return EMPTY_LIST_DATA;
+    }
+    EMPTY_LIST_DATA = malloc(sizeof(List *));
+    EMPTY_LIST_DATA->data = NULL;
+    EMPTY_LIST_DATA->next = NULL;
+    return EMPTY_LIST_DATA;
+}
+
+List *list_empty(void) {
+    List *list;
+
+    list = malloc(sizeof(List *));
+    list->data = list_empty_data();
+    list->next = NULL;
+    return list;
+}
+
+int list_is_empty(List *list) {
+    if (list->data == list_empty_data()) {
+        return (TRUE);
+    }
+    return (FALSE);
+}
+
 List *new_list(void *new_element) {
     List *pointer;
 
     if (new_element == NULL) {
-        return (NULL);
+        return (list_empty());
     }
 
     pointer = (List *)malloc(sizeof(List *));
@@ -16,8 +46,9 @@ List *new_list(void *new_element) {
 int list_append(List *list, void *new_element) {
     List *pointer;
 
-    if (list == NULL) {
-        list = new_list(new_element);
+    if (list_is_empty(list)) {
+        list->data = new_element;
+        list->next = NULL;
         return (TRUE);
     }
     pointer = list;
@@ -33,7 +64,7 @@ int list_insert(List *list, void *new_element, int index) {
     List *pointer;
     void *target = NULL;
 
-    if (list == NULL) {
+    if (list_is_empty(list)) {
         return (FALSE);
     }
     length = list_length(list);
@@ -52,9 +83,16 @@ int list_insert(List *list, void *new_element, int index) {
     while (pointer != NULL) {
         counter++;
         if (counter == target_index) {
-            List *tmp = pointer->next;
+            void *data;
+            List *next, *new;
+
+            data = pointer->data;
+            next = pointer->next;
             pointer->data = new_element;
-            pointer->next = tmp;
+            new = malloc(sizeof(List *));
+            new->data = data;
+            new->next = next;
+            pointer->next = new;
             return (TRUE);
         }
         pointer = pointer->next;
@@ -67,7 +105,7 @@ void *list_get(List *list, int index) {
     List *pointer;
     void *target = NULL;
 
-    if (list == NULL) {
+    if (list_is_empty(list)) {
         return (NULL);
     }
     length = list_length(list);
@@ -97,7 +135,7 @@ int list_index_of(List *list, void *target) {
     int counter, target_index;
     List *pointer;
 
-    if (list == NULL || target == NULL) {
+    if (list_is_empty(list) || target == NULL) {
         return (0);
     }
 
@@ -118,7 +156,7 @@ void *list_pop(List *list, int index) {
     List *pointer;
     void *target = NULL;
 
-    if (list == NULL) {
+    if (list_is_empty(list)) {
         return (NULL);
     }
     length = list_length(list);
@@ -152,6 +190,10 @@ int list_length(List *list) {
     int counter = 0;
     List *pointer;
 
+    if (list_is_empty(list)) {
+        return (0);
+    }
+
     pointer = list;
     while (pointer != NULL) {
         pointer = pointer->next;
@@ -162,6 +204,10 @@ int list_length(List *list) {
 
 int list_free(List *list) {
     List *pointer, *next;
+
+    if (list_is_empty(list)) {
+        return (TRUE);
+    }
 
     pointer = list;
     while (pointer != NULL) {
