@@ -183,8 +183,32 @@ Cell *subr_eq(Cell *pointer) {
     }
     arg1 = pointer->head;
     arg2 = pointer->tail->head;
-    if (arg1 == arg2) {
+    if (arg1->kind == ATOM && arg2->kind == ATOM) {
+        if (!strcmp((char *)arg1->head, (char *)arg2->head)) {
+            return (t());
+        }
+        return (nil());
+    }
+    if (arg1->kind == CONS && arg2->kind == CONS) {
+        Cell *head_result, *tail_result;
+        head_result = subr_eq(cons(arg1->head, cons(arg2->head, nil())));
+        tail_result = subr_eq(cons(arg1->tail, cons(arg2->tail, nil())));
+        if (head_result == t() && tail_result == t()) {
+            return (t());
+        }
+        return (nil());
+    }
+    if (arg1->kind == NIL && arg2->kind == NIL) {
         return (t());
+    }
+    if (arg1->kind == T && arg2->kind == T) {
+        return (t());
+    }
+    if (arg1->kind == NUMBER && arg2->kind == NUMBER) {
+        if (!strcmp((char *)arg1->head, (char *)arg2->head)) {
+            return (t());
+        }
+        return (nil());
     }
     return (nil());
 }
