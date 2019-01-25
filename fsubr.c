@@ -155,6 +155,17 @@ Cell *fsubr_define(Cell *pointer) {
     }
     bound_item = pointer->tail->head;
     environment = list_get(environment_stack, 1);
+    if (!list_is_empty(environment)) {
+        List *tmp;
+        tmp = environment;
+        while (tmp != NULL) {
+            if (!strcmp((char *)((Cell *)tmp->data)->head, (char *)atom_cell->head)) {
+                ((Cell *)tmp->data)->tail = subr_eval(cons(bound_item, nil()));
+                return (tmp->data);
+            }
+            tmp = tmp->next;
+        }
+    }
     atom_cell = atom((char *)atom_cell->head, subr_eval(cons(bound_item, nil())));
     list_append(environment, atom_cell);
     return (atom_cell);
