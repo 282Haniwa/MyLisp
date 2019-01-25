@@ -83,7 +83,7 @@ void *list_get(List *list, int index) {
 
     counter = 0;
     pointer = list;
-    while (pointer->next != NULL) {
+    while (pointer != NULL) {
         counter++;
         if (target_index == counter) {
             target = pointer->data;
@@ -101,8 +101,9 @@ int list_index_of(List *list, void *target) {
         return (0);
     }
 
+    counter = 0;
     pointer = list;
-    while (pointer->next != NULL) {
+    while (pointer != NULL) {
         counter++;
         if (pointer->data == target) {
             return (counter);
@@ -140,6 +141,7 @@ void *list_pop(List *list, int index) {
             target = pointer->next->data;
             free(pointer->next);
             pointer->next = tmp;
+            return (target);
         }
         pointer = pointer->next;
     }
@@ -151,7 +153,7 @@ int list_length(List *list) {
     List *pointer;
 
     pointer = list;
-    while (pointer->next != NULL) {
+    while (pointer != NULL) {
         pointer = pointer->next;
         counter++;
     }
