@@ -1,7 +1,6 @@
 #include "base.h"
 
 List *cell_list = NULL;
-List *global_bound_atom_list = NULL;
 List *environment_stack = NULL;
 
 static Cell *ATOM_NIL = NULL;
@@ -9,7 +8,6 @@ static Cell *ATOM_T = NULL;
 
 void init(void) {
     cell_list = new_list(NULL);
-    global_bound_atom_list = new_list(NULL);
     environment_stack = new_list(new_list(NULL));
 }
 
@@ -17,7 +15,7 @@ Cell *atom(char *atomic_symbol, Cell *bound_pointer) {
     Cell *pointer;
 
     if (bound_pointer == NULL) {
-        pointer = find_bound_atom(atomic_symbol, NULL);
+        pointer = find_bound_atom(atomic_symbol);
         if (pointer != NULL) {
             return (pointer);
         }
@@ -82,10 +80,21 @@ Cell *number(char *text) {
         pointer = (Cell *)malloc(sizeof(Cell));
         pointer->kind = NUMBER;
         pointer->head = (Cell *)strdup(text);
-        pointer->tail = (Cell *)&value;
+        pointer->tail = (Cell *)strdup(text);
         list_append(cell_list, pointer);
     }
     return (pointer);
+}
+
+double number_cell_to_double(Cell *pointer) {
+    double value = 0.0;
+    char **endptr = NULL;
+
+    value = strtod((char *)pointer->head, endptr);
+    if (endptr == NULL) {
+        return (value);
+    }
+    return (value);
 }
 
 Cell *lisp_list_append(Cell *list, Cell *new_element) {
@@ -135,8 +144,8 @@ int is_lisp_list(Cell *list) {
     }
 }
 
-Cell *find_bound_atom(char *atomic_symbol, List *environment) {
-    List *pointer, *list;
+Cell *find_bound_atom(char *atomic_symbol) {
+    List *environment, *atom_list;
 
     if (!strcmp(atomic_symbol, "nil")) {
         return (nil());
@@ -145,37 +154,20 @@ Cell *find_bound_atom(char *atomic_symbol, List *environment) {
         return (t());
     }
 
-    if (global_bound_atom_list == NULL) {
-        return (NULL);
-    }
-
     // スタックのトップから順に辿って、bindされているatomを探す。
-    if (environment != NULL) {
-        pointer = environment;
-        while (pointer->next != NULL) {
-            list = pointer->data;
-            while (list->next != NULL) {
-                if (!strcmp((char *)atomic_symbol,
-                            (char *)((Cell *)pointer->data)->head)) {
-                    return ((Cell *)pointer->data);
+    if (environment_stack != NULL) {
+        environment = environment_stack;
+        while (environment != NULL) {
+            atom_list = (List *)environment->data;
+            while (atom_list != NULL) {
+                if (!strcmp((char *)atomic_symbol, (char *)((Cell *)atom_list->data)->head)) {
+                    return ((Cell *)atom_list->data);
                 }
-                list = list->next;
+                atom_list = atom_list->next;
             }
-            pointer = pointer->next;
+            environment = environment->next;
         }
     }
-    // 関数ローカルで見つからなかった場合はグローバル領域から探す
-    // pointer = global_bound_atom_list;
-    // if (pointer == NULL) {
-    //     return (NULL);
-    // }
-    // while (pointer->next != NULL) {
-    //     pointer = pointer->next;
-    //     if (!strcmp((char *)atomic_symbol,
-    //                 (char *)((Cell *)pointer->data)->head)) {
-    //         return ((Cell *)pointer->data);
-    //     }
-    // }
     return (NULL);
 }
 
@@ -196,32 +188,22 @@ void dump_cell_list(void) {
     printf("--------------------------------\n");
 }
 
-void dump_bound_atom_list(List *environment) {
-    List *pointer;
+void dump_bound_atom_list() {
+    List *environment, *atom_list;
+    int bound_atom_count = 0;
 
-    printf("global bound atom count is : %d\n",
-           list_length(global_bound_atom_list));
+    environment = environment_stack;
+    while (environment != NULL) {
+        bound_atom_count += list_length(environment->data);
+        environment = environment->next;
+    }
+    printf("bound atom count is : %d\n", bound_atom_count);
     printf("bound atom list is  :\n");
-    pointer = global_bound_atom_list;
-    if (pointer == NULL) {
-        return;
-    }
-    while (pointer->next != NULL) {
-        pointer = pointer->next;
-        dump_tree((Cell *)pointer->data);
-    }
-    if (environment != NULL) {
-        printf("lambda local bound atom count is : %d\n",
-               list_length(environment));
-        printf("bound atom list is  :\n");
-        pointer = environment;
-        if (pointer == NULL) {
-            return;
-        }
-        while (pointer->next != NULL) {
-            pointer = pointer->next;
-            dump_tree((Cell *)pointer->data);
-        }
+    environment = environment_stack;
+    while (environment != NULL) {
+        atom_list = (List *)environment->data;
+        dump_tree((Cell *)atom_list->data);
+        environment = environment->next;
     }
     printf("--------------------------------\n");
 }

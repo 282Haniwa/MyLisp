@@ -180,7 +180,7 @@ Cell *subr_eval(Cell *pointer) {
     // atomにバインドされているものを返す。
     if (arg1->kind == ATOM) {
         Cell *atom;
-        atom = find_bound_atom((char *)arg1->head, list_get(environment_stack, -1));
+        atom = find_bound_atom((char *)arg1->head);
         if (atom == NULL) {
             printf("Error: %s is unbound atom.\n", (char *)arg1->head);
             return (nil());

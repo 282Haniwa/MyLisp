@@ -16,7 +16,7 @@ void evaluate(Cell *pointer) {
 
     print_lisp_code(pointer);
     printf("\n");
-    dump_bound_atom_list(NULL);
+    dump_bound_atom_list();
     // dump_cell_list();
     result = subr_eval(cons(pointer, nil()));
     subr_print(cons(result, nil()));
