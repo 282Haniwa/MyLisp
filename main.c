@@ -17,7 +17,11 @@ void evaluate(Cell *pointer) {
 
     result = subr_eval(cons(pointer, nil()));
     printf("< ");
-    subr_print(cons(result, nil()));
+    if (error_flag) {
+        subr_print(cons(nil(), nil()));
+    } else {
+        subr_print(cons(result, nil()));
+    }
     printf("\n");
     dump_bound_atom_list();
     return;

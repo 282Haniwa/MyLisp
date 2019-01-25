@@ -5,8 +5,10 @@ List *environment_stack = NULL;
 
 static Cell *ATOM_NIL = NULL;
 static Cell *ATOM_T = NULL;
+int error_flag;
 
 void init(void) {
+    error_flag = FALSE;
     cell_list = new_list(NULL);
     environment_stack = new_list(new_list(NULL));
 }

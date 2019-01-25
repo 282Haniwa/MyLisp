@@ -18,14 +18,17 @@ Cell *evaluate_lambda(Cell *lambda, Cell *args) {
     function = lambda->tail->tail;
     if (!is_lisp_list(arg_atom_list)) {
         printf("Error: Lambda args should define with list.\n");
+        error_flag = TRUE;
     }
     if (!strcmp((char *)lambda->head->head, "lambda")) {
         // 引数の数が合わなければエラーを出力する。
         if (lisp_list_length(arg_atom_list) < lisp_list_length(arg_list)) {
             printf("Error: Too many arguments.\n");
+            error_flag = TRUE;
             return (nil());
         } else if (lisp_list_length(arg_atom_list) > lisp_list_length(arg_list)) {
             printf("Error: Too few arguments.\n");
+            error_flag = TRUE;
             return (nil());
         }
         while (arg_atom_list != nil()) {
@@ -39,6 +42,7 @@ Cell *evaluate_lambda(Cell *lambda, Cell *args) {
         // nlambdaは引数の定義を１つにしなければならない。
         if (lisp_list_length(arg_atom_list) > 1) {
             printf("Error: Too many defined arguments for nlambda.\n");
+            error_flag = TRUE;
             return (nil());
         }
         list_append(environment, atom((char *)arg_atom_list->head->head, arg_list));
@@ -88,9 +92,11 @@ Cell *subr_atom(Cell *pointer) {
 
     if (lisp_list_length(pointer) < 1) {
         printf("Error: Too many arguments.\n");
+        error_flag = TRUE;
         return (nil());
     } else if (lisp_list_length(pointer) > 1) {
         printf("Error: Too few arguments.\n");
+        error_flag = TRUE;
         return (nil());
     }
     arg1 = pointer->head;
@@ -105,9 +111,11 @@ Cell *subr_car(Cell *pointer) {
 
     if (lisp_list_length(pointer) < 1) {
         printf("Error: Too many arguments.\n");
+        error_flag = TRUE;
         return (nil());
     } else if (lisp_list_length(pointer) > 1) {
         printf("Error: Too few arguments.\n");
+        error_flag = TRUE;
         return (nil());
     }
     arg1 = pointer->head;
@@ -115,6 +123,7 @@ Cell *subr_car(Cell *pointer) {
         printf("Error: ");
         print_lisp_code(arg1);
         printf("is not cons.\n");
+        error_flag = TRUE;
         return (nil());
     }
     return (arg1->head);
@@ -125,9 +134,11 @@ Cell *subr_cdr(Cell *pointer) {
 
     if (lisp_list_length(pointer) < 1) {
         printf("Error: Too many arguments.\n");
+        error_flag = TRUE;
         return (nil());
     } else if (lisp_list_length(pointer) > 1) {
         printf("Error: Too few arguments.\n");
+        error_flag = TRUE;
         return (nil());
     }
     arg1 = pointer->head;
@@ -135,6 +146,7 @@ Cell *subr_cdr(Cell *pointer) {
         printf("Error: ");
         print_lisp_code(arg1);
         printf("is not cons.\n");
+        error_flag = TRUE;
         return (nil());
     }
     return (arg1->tail);
@@ -145,9 +157,11 @@ Cell *subr_cons(Cell *pointer) {
 
     if (lisp_list_length(pointer) < 2) {
         printf("Error: Too many arguments.\n");
+        error_flag = TRUE;
         return (nil());
     } else if (lisp_list_length(pointer) > 2) {
         printf("Error: Too few arguments.\n");
+        error_flag = TRUE;
         return (nil());
     }
     arg1 = pointer->head;
@@ -160,9 +174,11 @@ Cell *subr_eq(Cell *pointer) {
 
     if (lisp_list_length(pointer) < 2) {
         printf("Error: Too many arguments.\n");
+        error_flag = TRUE;
         return (nil());
     } else if (lisp_list_length(pointer) > 2) {
         printf("Error: Too few arguments.\n");
+        error_flag = TRUE;
         return (nil());
     }
     arg1 = pointer->head;
@@ -176,11 +192,16 @@ Cell *subr_eq(Cell *pointer) {
 Cell *subr_eval(Cell *pointer) {
     Cell *arg1;
 
+    if (error_flag) {
+        return (nil());
+    }
     if (lisp_list_length(pointer) < 1) {
         printf("Error: Too many arguments.\n");
+        error_flag = TRUE;
         return (nil());
     } else if (lisp_list_length(pointer) > 1) {
         printf("Error: Too few arguments.\n");
+        error_flag = TRUE;
         return (nil());
     }
     arg1 = pointer->head;
@@ -190,6 +211,7 @@ Cell *subr_eval(Cell *pointer) {
         atom = find_bound_atom((char *)arg1->head);
         if (atom == NULL) {
             printf("Error: %s is unbound atom.\n", (char *)arg1->head);
+            error_flag = TRUE;
             return (nil());
         }
         return (atom->tail);
@@ -201,6 +223,7 @@ Cell *subr_eval(Cell *pointer) {
         // consがlist構造でなければ評価できないのでエラーを出力する。
         if (!is_lisp_list(arg1)) {
             printf("Error: Dotted pair can't evaluate.\n");
+            error_flag = TRUE;
             return (nil());
         }
         // １つ目がatomだった時組込関数なら実行して、そうでないならバインドされているものがlambdaかどうか確認して変数(lambda)に束縛する。
@@ -221,6 +244,7 @@ Cell *subr_eval(Cell *pointer) {
                 printf("Error: ");
                 print_lisp_code(arg1->head);
                 printf(" is not lambda.\n");
+                error_flag = TRUE;
                 return (nil());
             }
         } else if(arg1->head->kind == CONS) {
@@ -235,12 +259,14 @@ Cell *subr_eval(Cell *pointer) {
                 printf("Error: ");
                 print_lisp_code(arg1->head);
                 printf(" is not lambda.\n");
+                error_flag = TRUE;
                 return (nil());
             }
         } else {
             printf("Error: ");
             print_lisp_code(arg1->head);
             printf(" is not function.\n");
+            error_flag = TRUE;
             return (nil());
         }
     }
@@ -253,9 +279,11 @@ Cell *subr_numberp(Cell *pointer) {
 
     if (lisp_list_length(pointer) < 1) {
         printf("Error: Too many arguments.\n");
+        error_flag = TRUE;
         return (nil());
     } else if (lisp_list_length(pointer) > 1) {
         printf("Error: Too few arguments.\n");
+        error_flag = TRUE;
         return (nil());
     }
     arg1 = pointer->head;
@@ -270,9 +298,11 @@ Cell *subr_print(Cell *pointer) {
 
     if (lisp_list_length(pointer) < 1) {
         printf("Error: Too many arguments.\n");
+        error_flag = TRUE;
         return (nil());
     } else if (lisp_list_length(pointer) > 1) {
         printf("Error: Too few arguments.\n");
+        error_flag = TRUE;
         return (nil());
     }
     arg1 = pointer->head;

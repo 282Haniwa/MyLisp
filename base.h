@@ -41,6 +41,8 @@ void dump_tree(Cell *);
 void visit(Cell *, int);
 void print_lisp_code(Cell *);
 
+// error検知用のflag
+extern int error_flag;
 // gc実装用
 // TODO: gcを実装
 extern List *cell_list;

@@ -38,6 +38,7 @@ Cell *fsubr_add(Cell *pointer) {
                 printf("Error: ");
                 print_lisp_code(args->head);
                 printf(" is not number.\n");
+                error_flag = TRUE;
                 return (nil());
             }
         }
@@ -68,6 +69,7 @@ Cell *fsubr_sub(Cell *pointer) {
                 printf("Error: ");
                 print_lisp_code(args->head);
                 printf(" is not number.\n");
+                error_flag = TRUE;
                 return (nil());
             }
         }
@@ -98,6 +100,7 @@ Cell *fsubr_mul(Cell *pointer) {
                 printf("Error: ");
                 print_lisp_code(args->head);
                 printf(" is not number.\n");
+                error_flag = TRUE;
                 return (nil());
             }
         }
@@ -128,6 +131,7 @@ Cell *fsubr_div(Cell *pointer) {
                 printf("Error: ");
                 print_lisp_code(args->head);
                 printf(" is not number.\n");
+                error_flag = TRUE;
                 return (nil());
             }
         }
@@ -169,6 +173,7 @@ Cell *fsubr_define(Cell *pointer) {
         printf("Error: ");
         print_lisp_code(atom_cell);
         printf(" is not good atom. It can't bind anything.\n");
+        error_flag = TRUE;
         return (nil());
     }
     bound_item = pointer->tail->head;
