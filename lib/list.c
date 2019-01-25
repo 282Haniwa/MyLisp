@@ -3,6 +3,10 @@
 List *new_list(void *new_element) {
     List *pointer;
 
+    if (new_element == NULL) {
+        return (NULL);
+    }
+
     pointer = (List *)malloc(sizeof(List *));
     pointer->data = new_element;
     pointer->next = NULL;
@@ -13,7 +17,8 @@ int list_append(List *list, void *new_element) {
     List *pointer;
 
     if (list == NULL) {
-        return (FALSE);
+        list = new_list(new_element);
+        return (TRUE);
     }
     pointer = list;
     while (pointer->next != NULL) {
