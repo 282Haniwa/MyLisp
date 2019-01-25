@@ -25,7 +25,7 @@ ListPart
 	: SExpression
 	{ $$ = cons($1, nil()); }
 	| ListPart SExpression
-	{ $$ = list($1, cons($2, nil())); }
+	{ $$ = lisp_list_append($1, $2); }
 DottedPair
 	: LPAR SExpression DOT SExpression RPAR
 	{ $$ = cons($2, $4); }
@@ -33,9 +33,9 @@ Atom
 	: ATOMIC_SYMBOL
 	{ $$ = atom(yytext, NULL); }
 	| INTEGER
-	{ $$ = atom(yytext, object(OBJ_NUMBER, yytext)); }
+	{ $$ = number(yytext); }
 	| REAL
-	{ $$ = atom(yytext, object(OBJ_NUMBER, yytext)); }
+	{ $$ = number(yytext); }
 %%
 #include "lex.yy.c"
 void yyerror(char *s) {

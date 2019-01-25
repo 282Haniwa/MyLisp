@@ -1,15 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "lib/list.h"
+
+#ifndef TRUE
+#define TRUE 1
+#endif //TRUE
+#ifndef FALSE
+#define FALSE 0
+#endif //TRUE
 
 #ifndef BASE_H
 #define BASE_H
-#define CELL_LIST_SIZE 4096
-#define ATOM_LIST_SIZE 2048
-#define OBJECT_LIST_SIZE 2048
+#define LISP_CODE_LENGTH 128
 
-enum {CONS, ATOM};
-enum {OBJ_NUMBER, OBJ_STRING, OBJ_ATOM, OBJ_CONS, OBJ_NIL, OBJ_T};
+enum {ATOM, CONS, NIL, T, NUMBER};
+// enum {SUBR, FSUBR, EXPR, FEXPR, LAMBDA};
 
 typedef struct cell {
 	int          kind;
@@ -17,37 +23,32 @@ typedef struct cell {
 	struct cell *tail;
 } Cell;
 
-typedef struct obj {
-	int          kind;
-	int          bound;
-	void        *value;
-} Object;
-
 void init(void);
-Cell *cons(Cell *, Cell *);
-Cell *list(Cell *, Cell *);
 Cell *atom(char *, Cell *);
+Cell *cons(Cell *, Cell *);
 Cell *nil(void);
 Cell *t(void);
-Cell *object(int, void *);
-double number(Object *);
-Object *find_object(void *);
+Cell *number(char *);
+double number_cell_to_double(Cell *);
+Cell *lisp_list_append(Cell *, Cell *);
+int lisp_list_length(Cell *);
+int is_lisp_list(Cell *);
 Cell *find_bound_atom(char *);
 void dump_cell_list(void);
-void dump_bound_atom_list(void);
+void dump_bound_atom_list();
 void dump_object_list(void);
 void dump_tree(Cell *);
 void visit(Cell *, int);
+void print_lisp_code(Cell *);
 
-// gc実装用に確保
+// error検知用のflag
+extern int error_flag;
+// gc実装用
 // TODO: gcを実装
-extern Cell **cell_list;
-extern Object **object_list;
-// bound_atom識別用に確保
-extern Cell **bound_atom_list;
-
-extern int cell_list_next_index;
-extern int object_list_next_index;
-extern int bound_atom_list_next_index;
+extern List *cell_list;
+// bound_atom識別用
+// lambdaごとにスコープを持ち、静的スコープとしてatomにバインドされたものをを扱うための環境のスタック
+// 1オリジンで一方向の線形リストを効率よく利用するために数字の若い方がstackのトップになるように利用する
+extern List *environment_stack;
 
 #endif // BASE_H

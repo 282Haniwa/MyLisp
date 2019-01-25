@@ -1,50 +1,22 @@
 #include "base.h"
 
-Cell **cell_list;
-Object **object_list;
-Cell **bound_atom_list;
-int cell_list_next_index = 0;
-int object_list_next_index = 0;
-int bound_atom_list_next_index = 0;
+List *cell_list = NULL;
+List *environment_stack = NULL;
+
+static Cell *ATOM_NIL = NULL;
+static Cell *ATOM_T = NULL;
+int error_flag;
 
 void init(void) {
-    cell_list = (Cell **)malloc(CELL_LIST_SIZE * sizeof(Cell *));
-    object_list = (Object **)malloc(OBJECT_LIST_SIZE * sizeof(Object *));
-    bound_atom_list = (Cell **)malloc(ATOM_LIST_SIZE * sizeof(Cell *));
-    cell_list_next_index = 0;
-    object_list_next_index = 0;
-    bound_atom_list_next_index = 0;
-
-    bound_atom_list[bound_atom_list_next_index++] = nil();
-    bound_atom_list[bound_atom_list_next_index++] = t();
+    error_flag = FALSE;
+    cell_list = new_list(NULL);
+    environment_stack = new_list(new_list(NULL));
 }
 
-Cell *cons(Cell *car, Cell *cdr) {
+Cell *atom(char *atomic_symbol, Cell *bound_pointer) {
     Cell *pointer;
 
-    pointer = (Cell *)malloc(sizeof(Cell));
-    pointer->kind = CONS;
-    pointer->head = car;
-    pointer->tail = cdr;
-    cell_list[cell_list_next_index++] = pointer;
-    return (pointer);
-}
-
-Cell *list(Cell *previous_list, Cell *new_element) {
-    Cell *pointer;
-
-    pointer = previous_list;
-    while (pointer->tail != nil()) {
-        pointer = pointer->tail;
-    }
-    pointer->tail = new_element;
-    return (previous_list);
-}
-
-Cell *atom(char *atomic_symbol, Cell *object_pointer) {
-    Cell *pointer;
-
-    if (object_pointer == NULL) {
+    if (bound_pointer == NULL) {
         pointer = find_bound_atom(atomic_symbol);
         if (pointer != NULL) {
             return (pointer);
@@ -54,158 +26,199 @@ Cell *atom(char *atomic_symbol, Cell *object_pointer) {
     pointer = (Cell *)malloc(sizeof(Cell));
     pointer->kind = ATOM;
     pointer->head = (Cell *)strdup(atomic_symbol);
-    pointer->tail = (Cell *)object_pointer;
-    cell_list[cell_list_next_index++] = pointer;
+    pointer->tail = (Cell *)bound_pointer;
+    list_append(cell_list, pointer);
+    return (pointer);
+}
+
+Cell *cons(Cell *car, Cell *cdr) {
+    Cell *pointer;
+
+    pointer = (Cell *)malloc(sizeof(Cell));
+    pointer->kind = CONS;
+    pointer->head = car;
+    pointer->tail = cdr;
+    list_append(cell_list, pointer);
     return (pointer);
 }
 
 Cell *nil(void) {
-    Object *object_pointer;
-    Cell *cell_pointer = NULL;
+    Cell *pointer;
 
-    cell_pointer = find_bound_atom("nil");
-    if (cell_pointer != NULL) {
-        return (cell_pointer);
+    if (ATOM_NIL != NULL) {
+        return (ATOM_NIL);
     }
 
-    object_pointer = (Object *)malloc(sizeof(Object));
-    object_pointer->kind = OBJ_NIL;
-    object_pointer->bound = 1;
-    object_pointer->value = (void *)strdup("nil");
-    cell_pointer = (Cell *)malloc(sizeof(Cell));
-    cell_pointer->kind = ATOM;
-    cell_pointer->head = (Cell *)strdup("nil");
-    cell_pointer->tail = (Cell *)object_pointer;
-    object_list[object_list_next_index++] = object_pointer;
-    return (cell_pointer);
+    pointer = (Cell *)malloc(sizeof(Cell));
+    pointer->kind = NIL;
+    pointer->head = (Cell *)strdup("nil");
+    pointer->tail = (Cell *)strdup("nil");
+    ATOM_NIL = pointer;
+    return (pointer);
 }
 
 Cell *t(void) {
-    Object *object_pointer;
-    Cell *cell_pointer = NULL;
+    Cell *pointer;
 
-    cell_pointer = find_bound_atom("t");
-    if (cell_pointer != NULL) {
-        return (cell_pointer);
+    if (ATOM_T != NULL) {
+        return (ATOM_T);
     }
 
-    object_pointer = (Object *)malloc(sizeof(Object));
-    object_pointer->kind = OBJ_T;
-    object_pointer->bound = 1;
-    object_pointer->value = (void *)strdup("t");
-    cell_pointer = (Cell *)malloc(sizeof(Cell));
-    cell_pointer->kind = ATOM;
-    cell_pointer->head = (Cell *)strdup("t");
-    cell_pointer->tail = (Cell *)object_pointer;
-    object_list[object_list_next_index++] = object_pointer;
-    return (cell_pointer);
+    pointer = (Cell *)malloc(sizeof(Cell));
+    pointer->kind = T;
+    pointer->head = (Cell *)strdup("t");
+    pointer->tail = (Cell *)strdup("t");
+    ATOM_T = pointer;
+    return (pointer);
 }
 
-Cell *object(int object_type, void *value) {
-    Object *object_pointer = NULL;
+Cell *number(char *text) {
+    double value;
+    Cell *pointer = NULL;
+    char **endptr = NULL;
 
-    object_pointer = find_object(value);
-    if (object_pointer != NULL) {
-        return ((Cell *)object_pointer);
+    value = strtod((char *)text, endptr);
+    if (endptr == NULL) {
+        pointer = (Cell *)malloc(sizeof(Cell));
+        pointer->kind = NUMBER;
+        pointer->head = (Cell *)strdup(text);
+        pointer->tail = (Cell *)strdup(text);
+        list_append(cell_list, pointer);
     }
-
-    object_pointer = (Object *)malloc(sizeof(Object));
-
-    if (object_type == OBJ_NUMBER) {
-        object_pointer->kind = OBJ_NUMBER;
-        object_pointer->value = (void *)strdup(value);
-    }
-
-    if (object_type == OBJ_STRING) {
-        object_pointer->kind = OBJ_STRING;
-        object_pointer->value = (void *)strdup(value);
-    }
-
-    if (object_type == OBJ_ATOM) {
-        object_pointer->kind = OBJ_ATOM;
-        object_pointer->value = (void *)value;
-    }
-
-    if (object_type == OBJ_CONS) {
-        object_pointer->kind = OBJ_CONS;
-        object_pointer->value = (void *)value;
-    }
-
-    object_pointer->bound = 1;
-    object_list[object_list_next_index++] = object_pointer;
-    return ((Cell *)object_pointer);
+    return (pointer);
 }
 
-double number(Object *object_pointer) {
-    double value = strtod((char *)object_pointer->value, NULL);
+double number_cell_to_double(Cell *pointer) {
+    double value = 0.0;
+    char **endptr = NULL;
+
+    value = strtod((char *)pointer->head, endptr);
+    if (endptr == NULL) {
+        return (value);
+    }
     return (value);
 }
 
-Object *find_object(void *object_value) {
-    int n = 0;
-    Object *pointer;
+Cell *lisp_list_append(Cell *list, Cell *new_element) {
+    Cell *pointer;
 
-    // 線形探索は効率が悪い
-    while (n < object_list_next_index) {
-        pointer = object_list[n++];
-        if (pointer->kind == OBJ_ATOM || pointer->kind == OBJ_CONS) {
-            if (object_value == pointer->value) {
-                return (pointer);
-            }
-        } else {
-            if (!strcmp((const char *)object_value,
-                        (const char *)pointer->value)) {
-                return (pointer);
-            }
-        }
+    if (list == NULL) {
+        return (cons(new_element, nil()));
     }
-    return (NULL);
+
+    pointer = list;
+    if (pointer == nil()) {
+        return (cons(new_element, nil()));
+    }
+    while (pointer->tail != nil()) {
+        pointer = pointer->tail;
+    }
+    pointer->tail = cons(new_element, nil());
+    return (list);
+}
+
+int lisp_list_length(Cell *list) {
+    int counter = 0;
+    Cell *pointer;
+
+    pointer = list;
+    while (pointer != nil()) {
+        pointer = pointer->tail;
+        counter++;
+    }
+    return (counter);
+}
+
+int is_lisp_list(Cell *list) {
+    Cell *pointer;
+
+    if (list == nil()) {
+        return (TRUE);
+    }
+    pointer = list;
+    while (pointer->kind == CONS) {
+        pointer = pointer->tail;
+    }
+    if (pointer == nil()) {
+        return (TRUE);
+    } else {
+        return (FALSE);
+    }
 }
 
 Cell *find_bound_atom(char *atomic_symbol) {
-    int n = 0;
-    Cell *pointer;
+    List *environment, *atom_list;
 
-    // 線形探索は効率が悪い
-    while (n < bound_atom_list_next_index) {
-        pointer = bound_atom_list[n++];
-        if (!strcmp((const char *)atomic_symbol, (const char *)pointer->head)) {
-            return (pointer);
+    if (!strcmp(atomic_symbol, "nil")) {
+        return (nil());
+    }
+    if (!strcmp(atomic_symbol, "t")) {
+        return (t());
+    }
+
+    // スタックのトップから順に辿って、bindされているatomを探す。
+    if (!list_is_empty(environment_stack)) {
+        environment = environment_stack;
+        while (environment != NULL) {
+            atom_list = (List *)environment->data;
+            if (!list_is_empty(atom_list)) {
+                while (atom_list != NULL) {
+                    if (!strcmp((char *)atomic_symbol, (char *)((Cell *)atom_list->data)->head)) {
+                        return ((Cell *)atom_list->data);
+                    }
+                    atom_list = atom_list->next;
+                }
+            }
+            environment = environment->next;
         }
     }
     return (NULL);
 }
 
 void dump_cell_list(void) {
-    printf("cell count is : %d\n", cell_list_next_index);
+    List *pointer;
+
+    printf("cell count is : %d\n", list_length(cell_list));
     printf("cell list is  :\n");
-    for (int i = 0; i < cell_list_next_index; i++) {
-        dump_tree(cell_list[i]);
+    pointer = cell_list;
+    if (pointer == NULL) {
+        return;
+    }
+    while (pointer->next != NULL) {
+        pointer = pointer->next;
+        dump_tree((Cell *)pointer->data);
         printf("\n");
     }
     printf("--------------------------------\n");
 }
 
-void dump_bound_atom_list(void) {
-    printf("bound atom count is : %d\n", bound_atom_list_next_index);
-    printf("bound atom list is  :\n");
-    for (int i = 0; i < bound_atom_list_next_index; i++) {
-        printf("%s\n", (const char *)bound_atom_list[i]->head);
-    }
-    printf("--------------------------------\n");
-}
+void dump_bound_atom_list() {
+    List *environment, *atom_list;
+    int bound_atom_count = 0;
 
-void dump_object_list(void) {
-    printf("object count is : %d\n", object_list_next_index);
-    printf("object list is  :\n");
-    for (int i = 0; i < object_list_next_index; i++) {
-        Object *object_pointer = object_list[i];
-        if (object_pointer->kind == OBJ_ATOM) {
-            printf("atom(%s)\n", (const char *)((Cell *)object_pointer)->head);
-        } else if (object_pointer->kind == OBJ_CONS) {
-            dump_tree((Cell *)object_pointer->value);
-        } else {
-            printf("object(%s)\n", (const char *)object_pointer->value);
+    environment = environment_stack;
+    
+    if (!list_is_empty(environment)) {
+        while (environment != NULL) {
+            bound_atom_count += list_length(environment->data);
+            environment = environment->next;
+        }
+    }
+    printf("bound atom count is : %d\n", bound_atom_count);
+    printf("bound atom list is  :\n");
+    environment = environment_stack;
+    if (!list_is_empty(environment)) {
+        while (environment != NULL) {
+            atom_list = (List *)environment->data;
+            if (!list_is_empty(atom_list)) {
+                while (atom_list != NULL) {
+                    printf("%s <- ", (char *)((Cell *)atom_list->data)->head);
+                    print_lisp_code(((Cell *)atom_list->data)->tail);
+                    printf("\n");
+                    atom_list = atom_list->next;
+                }
+            }
+            environment = environment->next;
         }
     }
     printf("--------------------------------\n");
@@ -214,7 +227,6 @@ void dump_object_list(void) {
 void dump_tree(Cell *pointer) {
     visit(pointer, 1);
     printf("\n");
-    printf("--------------------------------\n");
 }
 
 void visit(Cell *pointer, int level) {
@@ -224,17 +236,46 @@ void visit(Cell *pointer, int level) {
     for (count = 0; count < level; count++) {
         printf("    ");
     }
+    if (pointer->kind == ATOM || pointer->kind == NIL || pointer->kind == T || pointer->kind == NUMBER) {
+        printf("atom(");
+        printf("%s", (char *)pointer->head);
+        printf(" %s", (char *)pointer->tail);
+        printf(")");
+    }
     if (pointer->kind == CONS) {
         printf("cons(");
         visit(pointer->head, level + 1);
         visit(pointer->tail, level + 1);
         printf(")");
     }
-    if (pointer->kind == ATOM) {
-        printf("atom(");
+    return;
+}
+
+void print_lisp_code(Cell *pointer) {
+    int count;
+
+    if (pointer->kind == ATOM || pointer->kind == NIL || pointer->kind == T || pointer->kind == NUMBER) {
         printf("%s", (char *)pointer->head);
-        // printf(" %s", (char *)pointer->tail);
-        printf(")");
+    }
+    if (pointer->kind == CONS) {
+        if (is_lisp_list(pointer)) {
+            Cell *tmp;
+            tmp = pointer;
+            printf("(");
+            while (tmp->tail != nil()) {
+                print_lisp_code(tmp->head);
+                printf(" ");
+                tmp = tmp->tail;
+            }
+            print_lisp_code(tmp->head);
+            printf(")");
+        } else {
+            printf("(");
+            print_lisp_code(pointer->head);
+            printf(" . ");
+            print_lisp_code(pointer->tail);
+            printf(")");
+        }
     }
     return;
 }
