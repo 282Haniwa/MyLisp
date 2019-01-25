@@ -56,11 +56,17 @@ Cell *evaluate_lambda(Cell *lambda, Cell *args) {
 }
 
 Cell *evaluate_subr_if_needed(char *atomic_symbol, Cell *pointer) {
-    Cell *result = NULL;
+    Cell *result = NULL, *args, *evaluated_args;
 
     for (int index = 0; index < SUBR_ARRAY_SIZE; index++) {
         if (!strcmp(subr_binding_atom_array[index], atomic_symbol)) {
-            result = subr_funcp_array[index](pointer);
+            args = pointer;
+            evaluated_args = nil();
+            while (args != nil()) {
+                evaluated_args = lisp_list_append(evaluated_args, subr_eval(cons(args->head, nil())));
+                args = args->tail;
+            }
+            result = subr_funcp_array[index](evaluated_args);
         }
     }
     return (result);
