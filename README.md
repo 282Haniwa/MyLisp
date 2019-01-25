@@ -12,26 +12,28 @@
 
 ## 言語仕様
 アトム
-アトムには以下のものがある
-記号
-数
-t
-nil
 
-記号は`x`, `atom`など、普通に文字を書いたもので、あらゆる文字を扱うことができる。
-使うことのできない文字は正規表現で`[ \t\r\n().#]`これらの文字である。
-数は1, 2, 1.0, 0,1などである。
-数字で始まっても数として扱えないもの(123ab等)は記号として扱われる。
+アトムには以下のものがある
+- 記号
+- 数
+- t
+- nil
+
+記号は`x`, `atom`など、普通に文字を書いたもので、あらゆる文字を扱うことができる。<br>
+使うことのできない文字は正規表現で`[ \t\r\n().#]`これらの文字である。<br>
+数は1, 2, 1.0, 0,1などである。<br>
+数字で始まっても数として扱えないもの(123ab等)は記号として扱われる。<br>
 tは真偽値のtrueを表す特殊なアトムで、nilは空のリストや何もないことを表す特殊なアトムである。
 
 リスト
-リストは`(`で始まり`)`で終わる記法で表すことができる。
-ドットペアは`(X . Y)`のように表され、carがX, cdrがYとなる。
+
+リストは`(`で始まり`)`で終わる記法で表すことができる。<br>
+ドットペアは`(X . Y)`のように表され、carがX, cdrがYとなる。<br>
 ドットペアの特殊な形がリストで、ドットペアがネストし、cdrを辿り続けた時にもっとも深い位置にあるドットペアのcdrがnilだった場合、リストとなる。
 
 例: `(1 . (2 . (3 . nil)))`
 
-この例は`(1 2 3)`と同じ意味を持ち、同じリストとして扱われる。
+この例は`(1 2 3)`と同じ意味を持ち、同じリストとして扱われる。<br>
 空のリストは`()`と表すことができ、これはアトムであるnilと同じ意味を持つ。
 
 プログラムは`(+ 1 2 3)`のように一つ目に関数、それ以降に引数列の形のリスト構造をインタプリタに食わせることで評価させて実行することができる。
@@ -42,6 +44,7 @@ tは真偽値のtrueを表す特殊なアトムで、nilは空のリストや何
 
 #### atom
 (atom X)
+
 Xがatomであればt、そうでなければnilを返す
 
 ```
@@ -60,6 +63,7 @@ Xがatomであればt、そうでなければnilを返す
 
 #### car
 (car X)
+
 cons(X)のcarを返す
 
 ```
@@ -70,6 +74,7 @@ cons(X)のcarを返す
 
 #### cdr
 (cdr X)
+
 cons(X)のcdrを返す
 
 ```
@@ -80,6 +85,7 @@ cons(X)のcdrを返す
 
 #### cons
 (cons X Y)
+
 XとYをそれぞれconsのcarとcdrにして返す
 
 ```
@@ -90,6 +96,7 @@ XとYをそれぞれconsのcarとcdrにして返す
 
 #### eq
 (eq X Y)
+
 XとYが同値であればt、そうでなければnilを返す
 
 ```
@@ -110,6 +117,7 @@ XとYが同値であればt、そうでなければnilを返す
 
 #### eval
 (eval X)
+
 MyLispの処理系と同じようにXを評価する
 
 ```
@@ -122,6 +130,7 @@ MyLispの処理系と同じようにXを評価する
 
 #### numberp
 (numberp X)
+
 Xがnumberであればt、そうでなければnilを返す
 
 ```
@@ -138,6 +147,7 @@ Xがnumberであればt、そうでなければnilを返す
 
 #### print
 (print X)
+
 Xを標準出力に書き出し、それ自体を返す
 
 ```
@@ -154,7 +164,8 @@ Xを標準出力に書き出し、それ自体を返す
 
 #### +
 (+ X1 X2 X3 ... Xn)
-X1, X2, X3, ... Xnを順次足し合わせて返す
+
+X1, X2, X3, ... Xnを順次足し合わせて返す<br>
 値はC言語のdoubleの計算精度、範囲である
 
 ```
@@ -165,7 +176,8 @@ X1, X2, X3, ... Xnを順次足し合わせて返す
 
 #### -
 (- X1 X2 X3 ... Xn)
-X1からX2, X3, ... Xnを順次引いて返す
+
+X1からX2, X3, ... Xnを順次引いて返す<br>
 値はC言語のdoubleの計算精度、範囲である
 
 ```
@@ -176,7 +188,8 @@ X1からX2, X3, ... Xnを順次引いて返す
 
 #### *
 (* X1 X2 X3 ... Xn)
-X1, X2, X3, ... Xnを順次掛けて合わせて返す
+
+X1, X2, X3, ... Xnを順次掛けて合わせて返す<br>
 値はC言語のdoubleの計算精度、範囲である
 
 ```
@@ -187,7 +200,8 @@ X1, X2, X3, ... Xnを順次掛けて合わせて返す
 
 #### /
 (/ X1 X2 X3 ... Xn)
-X1からX2, X3, ... Xnを順次割って返す
+
+X1からX2, X3, ... Xnを順次割って返す<br>
 値はC言語のdoubleの計算精度、範囲である
 
 ```
@@ -197,13 +211,14 @@ X1からX2, X3, ... Xnを順次割って返す
 
 
 #### %
-未実装
+未実装<br>
 モジュロ演算を順次実行する関数になる予定
 
 
 #### cond
 (cond (X1 Y11 Y12 ... Y1n) ... (Xn Yn1 Yn2 ... Ynn))
-x1 ... Xnがtと評価されるまで引数を順に確認し、
+
+x1 ... Xnがtと評価されるまで引数を順に確認し、<br>
 tと評価されたリストのYn1, Yn2 ... Ynnを評価し、最終の評価値を返す
 
 ```
@@ -218,6 +233,7 @@ tと評価されたリストのYn1, Yn2 ... Ynnを評価し、最終の評価値
 
 #### define
 (define X Y)
+
 Xで指定されたatomにYをバインドする
 
 ```
@@ -231,12 +247,13 @@ Xで指定されたatomにYをバインドする
 
 
 #### defun
-未実装
+未実装<br>
 どのスコープからでもアクセスできる関数を定義できる関数になる予定
 
 
 #### quote
 (quote X)
+
 Xを評価せずにそのまま返す
 
 ```
@@ -248,7 +265,7 @@ Xを評価せずにそのまま返す
 
 
 #### lambdaの扱い
-lambdaを関数として扱うことができる
+lambdaを関数として扱うことができる<br>
 nlambdaで特殊形の関数を扱うことができ、引数が評価されない可変長引数のlambdaを定義できる
 
 ```
@@ -269,7 +286,7 @@ lambdaをatomにバインドして関数として呼び出すこともできる
 ```
 
 ## BNF
-[Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui) をお借りしてBNFから図形を生成
+[Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui)をお借りしてBNFから図形を生成
 
 ```
 Program ::= SExpression+
@@ -282,55 +299,55 @@ INTEGER ::= "-"? "[0-9]"+
 REAL ::= "-"? "[0-9]"+ "." "[0-9]"+
 ```
 
-Program:
+### Program:
 
 ![Program](./bnf/diagram/Program.png)
 
 `Program ::= SExpression+`
 
-SExpression:
+### SExpression:
 
 ![SExpression](./bnf/diagram/SExpression.png)
 
 `SExpression ::= (Atom | DottedPair | List)`
 
 
-List:
+### List:
 
 ![List](./bnf/diagram/List.png)
 
 `List ::= "(" SExpression* ")"`
 
 
-DottedPair:
+### DottedPair:
 
 ![DottedPair](./bnf/diagram/DottedPair.png)
 
 `DottedPair ::= "(" SExpression "." SExpression ")"`
 
 
-Atom:
+### Atom:
 
 ![Atom](./bnf/diagram/Atom.png)
 
 `Atom ::= (ATOMIC_SYMBOL | INTEGER | REAL)`
 
 
-ATOMIC_SYMBOL:
+### ATOMIC_SYMBOL:
 
 ![ATOMIC_SYMBOL](./bnf/diagram/ATOMIC_SYMBOL.png)
 
 `ATOMIC_SYMBOL ::= "[^ \t\r\n().#]"*`
 
 
-INTEGER:
+### INTEGER:
 
 ![INTEGER](./bnf/diagram/INTEGER.png)
 
 `INTEGER ::= "-"? "[0-9]"+`
 
 
-REAL:
+### REAL:
 
 ![REAL](./bnf/diagram/REAL.png)
 
