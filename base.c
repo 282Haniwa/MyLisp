@@ -63,7 +63,7 @@ Cell *t(void) {
     }
 
     pointer = (Cell *)malloc(sizeof(Cell));
-    pointer->kind = ATOM;
+    pointer->kind = T;
     pointer->head = (Cell *)strdup("t");
     pointer->tail = (Cell *)strdup("t");
     ATOM_T = pointer;
