@@ -289,14 +289,14 @@ lambdaをatomにバインドして関数として呼び出すこともできる
 [Railroad Diagram Generator](http://www.bottlecaps.de/rr/ui)をお借りしてBNFから図形を生成
 
 ```
-Program ::= SExpression+
-SExpression ::= (Atom | DottedPair | List)
-List ::= "(" SExpression* ")"
-DottedPair ::= "(" SExpression "." SExpression ")"
-Atom ::= (ATOMIC_SYMBOL | INTEGER | REAL)
-ATOMIC_SYMBOL ::= "[^ \t\r\n().#]"*
-INTEGER ::= "-"? "[0-9]"+
-REAL ::= "-"? "[0-9]"+ "." "[0-9]"+
+Program         ::= SExpression+
+SExpression     ::= (Atom | DottedPair | List)
+List            ::= "(" SExpression* ")"
+DottedPair      ::= "(" SExpression "." SExpression ")"
+Atom            ::= (ATOMIC_SYMBOL | INTEGER | REAL)
+ATOMIC_SYMBOL   ::= "[^ \t\r\n().#]"*
+INTEGER         ::= "-"? "[0-9]"+
+REAL            ::= "-"? "[0-9]"+ "." "[0-9]"+
 ```
 
 ### Program:
