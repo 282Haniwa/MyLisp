@@ -18,29 +18,36 @@ Cell *evaluate_fsubr_if_needed(char *atomic_symbol, Cell *pointer) {
     return (result);
 }
 
+Cell *get_argument_if_number(Cell *pointer) {
+    if (pointer->kind == NUMBER) {
+        return (pointer);
+    } else {
+        Cell *tmp = subr_eval(cons(pointer, nil()));
+        if (tmp->kind == NUMBER) {
+            return (tmp);
+        } else {
+            printf("Error: ");
+            print_lisp_code(pointer);
+            printf(" is not number.\n");
+            error_flag = TRUE;
+            return (nil());
+        }
+    }
+}
+
 Cell *fsubr_add(Cell *pointer) {
-    Cell *args;
+    Cell *args, *number_cell;
     double result;
     char result_string[32];
 
     args = pointer;
     result = 0.0;
     while (args != nil()) {
-        if (args->head->kind == NUMBER) {
-            result += number_cell_to_double(args->head);
+        number_cell = get_argument_if_number(args->head);
+        if (number_cell->kind == NUMBER) {
+            result += number_cell_to_double(number_cell);
         } else {
-            Cell *tmp = subr_eval(cons(args->head, nil()));
-            if (tmp->kind == NUMBER) {
-                result += number_cell_to_double(tmp);
-            } else if (tmp == nil()) {
-                return (nil());
-            } else {
-                printf("Error: ");
-                print_lisp_code(args->head);
-                printf(" is not number.\n");
-                error_flag = TRUE;
-                return (nil());
-            }
+            return (nil());
         }
         args = args->tail;
     }
@@ -49,29 +56,24 @@ Cell *fsubr_add(Cell *pointer) {
 }
 
 Cell *fsubr_sub(Cell *pointer) {
-    Cell *args;
+    Cell *args, *number_cell;
     double result;
     char result_string[32];
 
     args = pointer;
-    result = number_cell_to_double(args->head);
+    number_cell = get_argument_if_number(args->head);
+    if (number_cell->kind == NUMBER) {
+        result = number_cell_to_double(number_cell);
+    } else {
+        return (nil());
+    }
     args = args->tail;
     while (args != nil()) {
-        if (args->head->kind == NUMBER) {
-            result -= number_cell_to_double(args->head);
+        number_cell = get_argument_if_number(args->head);
+        if (number_cell->kind == NUMBER) {
+            result -= number_cell_to_double(number_cell);
         } else {
-            Cell *tmp = subr_eval(cons(args->head, nil()));
-            if (tmp->kind == NUMBER) {
-                result -= number_cell_to_double(tmp);
-            } else if (tmp == nil()) {
-                return (nil());
-            } else {
-                printf("Error: ");
-                print_lisp_code(args->head);
-                printf(" is not number.\n");
-                error_flag = TRUE;
-                return (nil());
-            }
+            return (nil());
         }
         args = args->tail;
     }
@@ -80,29 +82,24 @@ Cell *fsubr_sub(Cell *pointer) {
 }
 
 Cell *fsubr_mul(Cell *pointer) {
-    Cell *args;
+    Cell *args, *number_cell;
     double result;
     char result_string[32];
 
     args = pointer;
-    result = number_cell_to_double(args->head);
+    number_cell = get_argument_if_number(args->head);
+    if (number_cell->kind == NUMBER) {
+        result = number_cell_to_double(number_cell);
+    } else {
+        return (nil());
+    }
     args = args->tail;
     while (args != nil()) {
-        if (args->head->kind == NUMBER) {
-            result *= number_cell_to_double(args->head);
+        number_cell = get_argument_if_number(args->head);
+        if (number_cell->kind == NUMBER) {
+            result *= number_cell_to_double(number_cell);
         } else {
-            Cell *tmp = subr_eval(cons(args->head, nil()));
-            if (tmp->kind == NUMBER) {
-                result *= number_cell_to_double(tmp);
-            } else if (tmp == nil()) {
-                return (nil());
-            } else {
-                printf("Error: ");
-                print_lisp_code(args->head);
-                printf(" is not number.\n");
-                error_flag = TRUE;
-                return (nil());
-            }
+            return (nil());
         }
         args = args->tail;
     }
@@ -111,29 +108,24 @@ Cell *fsubr_mul(Cell *pointer) {
 }
 
 Cell *fsubr_div(Cell *pointer) {
-    Cell *args;
+    Cell *args, *number_cell;
     double result;
     char result_string[32];
 
     args = pointer;
-    result = number_cell_to_double(args->head);
+    number_cell = get_argument_if_number(args->head);
+    if (number_cell->kind == NUMBER) {
+        result = number_cell_to_double(number_cell);
+    } else {
+        return (nil());
+    }
     args = args->tail;
     while (args != nil()) {
-        if (args->head->kind == NUMBER) {
-            result /= number_cell_to_double(args->head);
+        number_cell = get_argument_if_number(args->head);
+        if (number_cell->kind == NUMBER) {
+            result /= number_cell_to_double(number_cell);
         } else {
-            Cell *tmp = subr_eval(cons(args->head, nil()));
-            if (tmp->kind == NUMBER) {
-                result /= number_cell_to_double(tmp);
-            } else if (tmp == nil()) {
-                return (nil());
-            } else {
-                printf("Error: ");
-                print_lisp_code(args->head);
-                printf(" is not number.\n");
-                error_flag = TRUE;
-                return (nil());
-            }
+            return (nil());
         }
         args = args->tail;
     }

@@ -7,6 +7,7 @@
 #define FSUBR_ARRAY_SIZE 9
 
 Cell *evaluate_fsubr_if_needed(char *, Cell *);
+Cell *get_argument_if_number(Cell *);
 Cell *fsubr_add(Cell *);
 Cell *fsubr_sub(Cell *);
 Cell *fsubr_mul(Cell *);
