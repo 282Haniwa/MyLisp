@@ -2,10 +2,10 @@
 
 Cell *(*fsubr_funcp_array[])(Cell *) = {fsubr_add,    fsubr_sub,   fsubr_mul,
                                         fsubr_div,    fsubr_mod,   fsubr_cond,
-                                        fsubr_define, fsubr_defun, fsubr_quote};
+                                        fsubr_define, fsubr_quote};
 
 char *fsubr_binding_atom_array[] = {"+",    "-",      "*",     "/",    "%",
-                                    "cond", "define", "defun", "quote"};
+                                    "cond", "define", "quote"};
 
 Cell *evaluate_fsubr_if_needed(char *atomic_symbol, Cell *pointer) {
     Cell *result = NULL;
@@ -134,7 +134,11 @@ Cell *fsubr_div(Cell *pointer) {
 }
 
 // 実装を保留
-Cell *fsubr_mod(Cell *pointer) { return (pointer); }
+Cell *fsubr_mod(Cell *pointer) {
+    printf("Error: Not implemented % function.");
+    error_flag = TRUE;
+    return (nil());
+}
 
 Cell *fsubr_cond(Cell *pointer) {
     Cell *args, *condition, *function, *result;
@@ -187,7 +191,5 @@ Cell *fsubr_define(Cell *pointer) {
     list_append(environment, atom_cell);
     return (atom_cell);
 }
-
-Cell *fsubr_defun(Cell *pointer) { return (pointer); }
 
 Cell *fsubr_quote(Cell *pointer) { return (pointer->head); }
