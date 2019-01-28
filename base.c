@@ -27,7 +27,7 @@ Cell *atom(char *atomic_symbol, Cell *bound_pointer) {
     pointer->kind = ATOM;
     pointer->head = (Cell *)strdup(atomic_symbol);
     pointer->tail = (Cell *)bound_pointer;
-    list_append(cell_list, pointer);
+    // list_append(cell_list, pointer);
     return (pointer);
 }
 
@@ -38,7 +38,7 @@ Cell *cons(Cell *car, Cell *cdr) {
     pointer->kind = CONS;
     pointer->head = car;
     pointer->tail = cdr;
-    list_append(cell_list, pointer);
+    // list_append(cell_list, pointer);
     return (pointer);
 }
 
@@ -83,7 +83,7 @@ Cell *number(char *text) {
         pointer->kind = NUMBER;
         pointer->head = (Cell *)strdup(text);
         pointer->tail = (Cell *)strdup(text);
-        list_append(cell_list, pointer);
+        // list_append(cell_list, pointer);
     }
     return (pointer);
 }
