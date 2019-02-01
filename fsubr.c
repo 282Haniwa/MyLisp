@@ -135,7 +135,9 @@ Cell *fsubr_div(Cell *pointer) {
 
 // 実装を保留
 Cell *fsubr_mod(Cell *pointer) {
-    printf("Error: Not implemented % function.");
+    printf("Error: Not implemented %% function.\n");
+    printf("       Can't evaluate %% with args ");
+    print_lisp_code(pointer);
     error_flag = TRUE;
     return (nil());
 }
