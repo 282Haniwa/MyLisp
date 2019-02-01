@@ -5,6 +5,12 @@
 - 意味解析はC言語
 で作られている。
 
+## How to use
+```
+$ make
+$ ./MyLisp
+```
+
 ## Lispとは
 [John McCarthy(Wiki)](https://ja.wikipedia.org/wiki/%E3%82%B8%E3%83%A7%E3%83%B3%E3%83%BB%E3%83%9E%E3%83%83%E3%82%AB%E3%83%BC%E3%82%B7%E3%83%BC)が開発したプログラミング言語であり、Lispの名前の由来であるlist processorの通り、プログラムとデータの両方をリストとして記述することができる強力な言語である。
 
